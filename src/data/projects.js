@@ -18,6 +18,8 @@ export const projects = [
       { title: "Product Listings", done: true },
       { title: "Payment Integration", done: true },
     ],
+    tasks: [],
+    comments: [],
   },
   {
     id: "2",
@@ -38,6 +40,8 @@ export const projects = [
       { title: "Chat Interface", done: false },
       { title: "Deployment", done: false },
     ],
+    tasks: [],
+    comments: [],
   },
   {
     id: "3",
@@ -57,6 +61,8 @@ export const projects = [
       { title: "Indexing", done: true },
       { title: "Queries", done: true },
     ],
+    tasks: [],
+    comments: [],
   },
   {
     id: "4",
@@ -77,5 +83,7 @@ export const projects = [
       { title: "Dashboard", done: false },
       { title: "Export PDF", done: false },
     ],
+    tasks: [],
+    comments: [],
   },
 ];

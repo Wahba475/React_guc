@@ -13,7 +13,8 @@ export const internships = [
     description: "Join our product team to build React-based dashboards for our B2B SaaS platform. You'll work alongside senior engineers on real features.",
     requirements: ["React", "JavaScript", "CSS", "Git"],
     tags: ["Frontend", "React", "Paid"],
-    applicants: 34,
+    applicants: [],
+    status: "open",
     employerId: "2",
   },
   {
@@ -30,7 +31,8 @@ export const internships = [
     description: "Help build and maintain the backend infrastructure powering Instabug's SDK and web dashboard. Work with Ruby on Rails and PostgreSQL.",
     requirements: ["Ruby", "Rails", "PostgreSQL", "REST APIs"],
     tags: ["Backend", "Ruby", "Paid"],
-    applicants: 21,
+    applicants: [],
+    status: "open",
     employerId: "2",
   },
   {
@@ -47,7 +49,8 @@ export const internships = [
     description: "Work with the ADAS team on real-time embedded software for automotive ECUs. C and AUTOSAR experience preferred.",
     requirements: ["C", "AUTOSAR", "Embedded Systems", "RTOS"],
     tags: ["Embedded", "Automotive", "Paid"],
-    applicants: 58,
+    applicants: [],
+    status: "open",
     employerId: "2",
   },
   {
@@ -64,7 +67,9 @@ export const internships = [
     description: "Analyze customer behavior and demand forecasting using Python and ML models. You'll present findings to the product team weekly.",
     requirements: ["Python", "Pandas", "Scikit-learn", "SQL"],
     tags: ["Data Science", "Python", "Remote", "Paid"],
-    applicants: 47,
+    applicants: [],
+    status: "open",
     employerId: "2",
   },
 ];
+

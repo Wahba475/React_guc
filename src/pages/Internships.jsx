@@ -1,58 +1,98 @@
 import { useState } from 'react'
 import AppLayout from '../components/AppLayout'
-import { internships } from '../data/internships'
-import { MapPin, Clock, Banknote, Search, Users } from 'lucide-react'
+import { MapPin, Clock, Banknote, Search, Users, Plus, X, CheckCircle2 } from 'lucide-react'
 
-export default function Internships({ currentUser, onLogout }) {
+export default function Internships({ currentUser, onLogout, internships, onApply, onCreateInternship }) {
   const [query, setQuery] = useState('')
   const [typeFilter, setTypeFilter] = useState('All')
+  const [feedback, setFeedback] = useState({}) // { [id]: 'applied' | 'error' }
+  const [showModal, setShowModal] = useState(false)
+
+  // Create internship form (employer only)
+  const [form, setForm] = useState({
+    role: '', company: '', description: '', type: 'Hybrid',
+    location: '', duration: '', stipend: '', deadline: '', requirements: '',
+  })
+  const [creating, setCreating] = useState(false)
 
   const types = ['All', 'On-site', 'Remote', 'Hybrid']
+  const isEmployer = currentUser.role === 'employer'
+  const isStudent = currentUser.role === 'student'
 
   const filtered = internships.filter((i) => {
     const matchQuery =
       i.role.toLowerCase().includes(query.toLowerCase()) ||
       i.company.toLowerCase().includes(query.toLowerCase()) ||
-      i.requirements.some((r) => r.toLowerCase().includes(query.toLowerCase()))
+      (i.requirements || []).some((r) => r.toLowerCase().includes(query.toLowerCase()))
     const matchType = typeFilter === 'All' || i.type === typeFilter
     return matchQuery && matchType
   })
+
+  function handleApply(internshipId) {
+    const result = onApply(internshipId)
+    if (result?.success) {
+      setFeedback((prev) => ({ ...prev, [internshipId]: 'applied' }))
+    } else {
+      setFeedback((prev) => ({ ...prev, [internshipId]: result?.error || 'error' }))
+    }
+  }
+
+  function hasApplied(internship) {
+    const applicants = internship.applicants || []
+    return applicants.includes(currentUser.id)
+  }
+
+  function handleCreate(e) {
+    e.preventDefault()
+    if (!form.role.trim() || !form.company.trim()) return
+    setCreating(true)
+    const reqs = form.requirements.split(',').map((r) => r.trim()).filter(Boolean)
+    onCreateInternship({ ...form, requirements: reqs, tags: [] })
+    setCreating(false)
+    setShowModal(false)
+    setForm({ role: '', company: '', description: '', type: 'Hybrid', location: '', duration: '', stipend: '', deadline: '', requirements: '' })
+  }
 
   return (
     <AppLayout currentUser={currentUser} onLogout={onLogout}>
       <div className="max-w-[1280px] mx-auto w-full">
         {/* Page Header */}
-        <div className="mb-12">
-          <p
-            className="text-xs font-semibold uppercase tracking-wider text-[#747878] mb-2"
-            style={{ fontFamily: "'Inter', sans-serif" }}
-          >
-            Opportunities
-          </p>
-          <h2
-            className="text-4xl md:text-5xl font-bold text-[#111111] mb-4"
-            style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em', lineHeight: '1.15' }}
-          >
-            Internships
-          </h2>
-          <p
-            className="text-lg text-[#747878] max-w-2xl leading-relaxed"
-            style={{ fontFamily: "'Manrope', sans-serif" }}
-          >
-            {internships.length} open positions available.
-          </p>
+        <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-wider text-[#747878] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+              Opportunities
+            </p>
+            <h2
+              className="text-4xl md:text-5xl font-bold text-[#111111] mb-3"
+              style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em', lineHeight: '1.15' }}
+            >
+              Internships
+            </h2>
+            <p className="text-lg text-[#747878] leading-relaxed" style={{ fontFamily: "'Manrope', sans-serif" }}>
+              {filtered.length} open position{filtered.length !== 1 ? 's' : ''} available.
+            </p>
+          </div>
+          {isEmployer && (
+            <button
+              onClick={() => setShowModal(true)}
+              className="inline-flex items-center gap-2 bg-[#111111] text-white px-5 py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#333] transition-colors border border-[#111111] flex-shrink-0"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              <Plus size={14} /> Post Internship
+            </button>
+          )}
         </div>
 
         {/* Controls */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 pb-4 border-b border-[#e5e2e1]">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             {types.map((t) => (
               <button
                 key={t}
                 onClick={() => setTypeFilter(t)}
                 className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors border
                   ${typeFilter === t
-                    ? 'bg-[#111111] text-white border-[#111111] hover:bg-[#333]'
+                    ? 'bg-[#111111] text-white border-[#111111]'
                     : 'bg-white text-[#111111] border-[#c4c7c7] hover:bg-[#f1edec]'
                   }`}
                 style={{ fontFamily: "'Inter', sans-serif" }}
@@ -61,18 +101,16 @@ export default function Internships({ currentUser, onLogout }) {
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <div className="relative w-full md:w-64">
-              <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#747878]" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search by role, company…"
-                className="w-full pl-10 pr-4 py-2 border-b border-[#c4c7c7] bg-transparent focus:border-[#111111] focus:outline-none focus:ring-0 text-sm text-[#111111] placeholder:text-[#747878] transition-colors"
-                style={{ fontFamily: "'Manrope', sans-serif" }}
-              />
-            </div>
+          <div className="relative w-full md:w-64">
+            <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#747878]" />
+            <input
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search by role, company…"
+              className="w-full pl-9 pr-4 py-2 border-b border-[#c4c7c7] bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#747878] transition-colors"
+              style={{ fontFamily: "'Manrope', sans-serif" }}
+            />
           </div>
         </div>
 
@@ -83,81 +121,196 @@ export default function Internships({ currentUser, onLogout }) {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {filtered.map((i) => (
-              <div
-                key={i.id}
-                className="bg-white border border-[#e5e2e1] p-6 flex flex-col gap-4 hover:border-[#111111] transition-colors duration-200 group"
-              >
-                <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
-                  <div>
-                    <h3
-                      className="text-2xl font-bold text-[#111111] group-hover:text-[#6b38d4] transition-colors leading-snug"
-                      style={{ fontFamily: "'Newsreader', serif" }}
-                    >
-                      {i.role}
-                    </h3>
-                    <p className="text-base text-[#111111] mt-1" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                      {i.company}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="text-[10px] font-semibold uppercase tracking-wider bg-[#f1edec] text-[#111111] px-2 py-1 border border-[#e5e2e1]"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
-                      {i.type}
-                    </span>
-                    <span
-                      className="text-[10px] font-semibold uppercase tracking-wider bg-[#111111] text-white px-2 py-1 border border-[#111111]"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
-                      Paid
-                    </span>
-                  </div>
-                </div>
-
-                <p
-                  className="text-sm text-[#747878] leading-relaxed line-clamp-3 flex-1"
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
+            {filtered.map((i) => {
+              const applied = hasApplied(i) || feedback[i.id] === 'applied'
+              const alreadyMsg = feedback[i.id] === 'Already applied' ? true : false
+              return (
+                <div
+                  key={i.id}
+                  className="bg-white border border-[#e5e2e1] p-6 flex flex-col gap-4 hover:border-[#111111] transition-colors duration-200 group"
                 >
-                  {i.description}
-                </p>
+                  <div className="flex flex-wrap items-start justify-between gap-3 mb-1">
+                    <div>
+                      <h3
+                        className="text-2xl font-bold text-[#111111] group-hover:text-[#6b38d4] transition-colors leading-snug"
+                        style={{ fontFamily: "'Newsreader', serif" }}
+                      >
+                        {i.role}
+                      </h3>
+                      <p className="text-base text-[#111111] mt-1" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                        {i.company}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span
+                        className="text-[10px] font-semibold uppercase tracking-wider bg-[#f1edec] text-[#111111] px-2 py-1 border border-[#e5e2e1]"
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      >
+                        {i.type}
+                      </span>
+                      <span
+                        className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-1 border ${i.status === 'closed' ? 'bg-[#f1edec] text-[#747878] border-[#e5e2e1]' : 'bg-[#111111] text-white border-[#111111]'}`}
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      >
+                        {i.status === 'closed' ? 'Closed' : 'Open'}
+                      </span>
+                    </div>
+                  </div>
 
-                <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-[#111111] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
-                  <span className="flex items-center gap-1.5"><MapPin size={14} className="text-[#747878]" /> {i.location}</span>
-                  <span className="flex items-center gap-1.5"><Clock size={14} className="text-[#747878]" /> {i.duration}</span>
-                  <span className="flex items-center gap-1.5"><Banknote size={14} className="text-[#747878]" /> {i.stipend}</span>
-                  <span className="flex items-center gap-1.5"><Users size={14} className="text-[#747878]" /> {i.applicants} app</span>
-                </div>
+                  <p className="text-sm text-[#747878] leading-relaxed line-clamp-3 flex-1" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                    {i.description}
+                  </p>
 
-                <div className="flex flex-wrap gap-2 pt-4 border-t border-[#e5e2e1]">
-                  {i.requirements.map((r) => (
-                    <span
-                      key={r}
-                      className="text-[10px] font-semibold uppercase tracking-wider bg-[#ebe7e6] text-[#111111] px-2 py-1"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
-                      {r}
+                  <div className="flex flex-wrap gap-x-6 gap-y-2 text-xs font-semibold text-[#111111] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    <span className="flex items-center gap-1.5"><MapPin size={12} className="text-[#747878]" /> {i.location}</span>
+                    <span className="flex items-center gap-1.5"><Clock size={12} className="text-[#747878]" /> {i.duration}</span>
+                    {i.stipend && <span className="flex items-center gap-1.5"><Banknote size={12} className="text-[#747878]" /> {i.stipend}</span>}
+                    <span className="flex items-center gap-1.5"><Users size={12} className="text-[#747878]" /> {(i.applicants || []).length} applicants</span>
+                  </div>
+
+                  <div className="flex flex-wrap gap-2 pt-3 border-t border-[#e5e2e1]">
+                    {(i.requirements || []).map((r) => (
+                      <span key={r} className="text-[10px] font-semibold uppercase tracking-wider bg-[#ebe7e6] text-[#111111] px-2 py-1" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        {r}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center justify-between mt-2">
+                    <span className="text-xs text-[#747878] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Deadline: {i.deadline}
                     </span>
-                  ))}
-                </div>
 
-                <div className="flex items-center justify-between mt-4">
-                  <span className="text-xs text-[#747878] font-semibold uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
-                    Deadline: {i.deadline}
-                  </span>
-                  <button
-                    className="bg-[#111111] text-white px-4 py-2 text-xs font-semibold uppercase tracking-wider hover:opacity-90 transition-opacity active:translate-y-[2px] active:translate-x-[2px] active:shadow-[inset_2px_2px_0px_0px_rgba(0,0,0,0.5)] border border-[#111111]"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
-                    Apply now
-                  </button>
+                    {/* Student: apply button */}
+                    {isStudent && (
+                      applied ? (
+                        <span
+                          className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-green-700 border border-green-200 bg-green-50 px-4 py-2"
+                          style={{ fontFamily: "'Inter', sans-serif" }}
+                        >
+                          <CheckCircle2 size={12} /> Applied
+                        </span>
+                      ) : (
+                        <button
+                          onClick={() => handleApply(i.id)}
+                          disabled={i.status === 'closed'}
+                          className="bg-[#111111] text-white px-4 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-[#333] transition-colors border border-[#111111] disabled:opacity-40 disabled:cursor-not-allowed"
+                          style={{ fontFamily: "'Inter', sans-serif" }}
+                        >
+                          Apply Now
+                        </button>
+                      )
+                    )}
+
+                    {/* Employer: view applicant count */}
+                    {isEmployer && String(i.employerId) === String(currentUser.id) && (
+                      <span className="text-xs font-bold text-[#111111] border border-[#e5e2e1] px-3 py-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                        {(i.applicants || []).length} applicant{(i.applicants || []).length !== 1 ? 's' : ''}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </div>
+
+      {/* ── Create Internship Modal (employer) ── */}
+      {showModal && isEmployer && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white w-full max-w-lg border border-[#e5e2e1] max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between px-8 py-5 border-b border-[#e5e2e1] sticky top-0 bg-white z-10">
+              <h3 className="text-2xl font-bold text-[#111111]" style={{ fontFamily: "'Newsreader', serif" }}>
+                Post Internship
+              </h3>
+              <button onClick={() => setShowModal(false)} className="text-[#747878] hover:text-[#111111] transition-colors">
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleCreate} className="px-8 py-6 space-y-5">
+              {[
+                { label: 'Role / Title *', key: 'role', placeholder: 'e.g. Frontend Developer Intern' },
+                { label: 'Company *', key: 'company', placeholder: 'e.g. TechCorp Egypt' },
+                { label: 'Location', key: 'location', placeholder: 'Cairo, Egypt' },
+                { label: 'Duration', key: 'duration', placeholder: '3 months' },
+                { label: 'Stipend', key: 'stipend', placeholder: 'EGP 4,000 / month' },
+                { label: 'Deadline', key: 'deadline', type: 'date', placeholder: '' },
+              ].map(({ label, key, placeholder, type }) => (
+                <div key={key}>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[#111111] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>{label}</label>
+                  <input
+                    type={type || 'text'}
+                    value={form[key]}
+                    onChange={(e) => setForm((f) => ({ ...f, [key]: e.target.value }))}
+                    placeholder={placeholder}
+                    className="w-full border-b border-[#c4c7c7] py-2 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
+                    style={{ fontFamily: "'Manrope', sans-serif" }}
+                  />
+                </div>
+              ))}
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-[#111111] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>Description</label>
+                <textarea
+                  rows={3}
+                  value={form.description}
+                  onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                  placeholder="Describe the role…"
+                  className="w-full border border-[#c4c7c7] p-3 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors resize-none"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-[#111111] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  Requirements <span className="normal-case text-[#747878] font-normal">(comma separated)</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.requirements}
+                  onChange={(e) => setForm((f) => ({ ...f, requirements: e.target.value }))}
+                  placeholder="React, TypeScript, Git"
+                  className="w-full border-b border-[#c4c7c7] py-2 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
+                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-widest text-[#111111] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>Type</label>
+                <div className="flex gap-2 flex-wrap">
+                  {['On-site', 'Remote', 'Hybrid'].map((v) => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setForm((f) => ({ ...f, type: v }))}
+                      className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border transition-colors ${form.type === v ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#111111] border-[#c4c7c7] hover:bg-[#f1edec]'}`}
+                      style={{ fontFamily: "'Inter', sans-serif" }}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="submit"
+                  disabled={creating}
+                  className="flex-1 bg-[#111111] text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-[#333] transition-colors disabled:opacity-50"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  {creating ? 'Posting…' : 'Post Internship'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="px-6 py-3 border border-[#c4c7c7] text-xs font-bold uppercase tracking-widest text-[#111111] hover:bg-[#f1edec] transition-colors"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </AppLayout>
   )
 }
