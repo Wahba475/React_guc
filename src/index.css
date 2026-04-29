@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+/* ─── Paper Design System Tokens ─── */
+:root {
+  --color-bg:          #fdf8f8;
+  --color-surface:     #ffffff;
+  --color-primary:     #111111;
+  --color-secondary:   #6b38d4;
+  --color-secondary-light: #e9ddff;
+  --color-success:     #16A34A;
+  --color-warning:     #D97706;
+  --color-danger:      #DC2626;
+  --color-text:        #111827;
+  --color-text-muted:  #4B5563;
+  --color-outline:     #747878;
+  --color-outline-var: #c4c7c7;
+  --color-surface-low: #f7f3f2;
+  --color-surface-high:#ebe7e6;
+
+  --font-display:  'Newsreader', Georgia, serif;
+  --font-headline: 'Manrope', system-ui, sans-serif;
+  --font-body:     'Inter', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--color-surface-low); }
+::-webkit-scrollbar-thumb { background: var(--color-outline-var); border-radius: 3px; }
