@@ -1,25 +1,9 @@
-import { Link, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import { ArrowRight, BookOpen, Briefcase, FolderKanban, GitFork, Globe } from 'lucide-react'
-import { Component as HorizonHero } from '../components/ui/horizon-hero-section'
-
-const features = [
-  {
-    icon: FolderKanban,
-    title: 'Projects',
-    desc: 'Organize your work with structural clarity. Every project is a documented milestone with milestones, tags, and collaborators.',
-  },
-  {
-    icon: BookOpen,
-    title: 'Portfolios',
-    desc: 'Present your capabilities on a clean, editorial canvas that highlights substance over flash.',
-  },
-  {
-    icon: Briefcase,
-    title: 'Internships',
-    desc: 'Bridge the gap between academia and industry with verifiable skill documentation and real opportunities.',
-  },
-]
+import { Link, useNavigate } from 'react-router-dom'
+import { GitFork, Globe } from 'lucide-react'
+import { motion } from 'framer-motion'
+import PortfoliaHero from '../components/ui/portfolia-hero'
+import { FeaturesSection } from '../components/ui/features-section'
 
 export default function Landing({ currentUser }) {
   const navigate = useNavigate()
@@ -30,79 +14,30 @@ export default function Landing({ currentUser }) {
 
   return (
     <div className="min-h-screen bg-[#fdf8f8] flex flex-col">
-      {/* Navbar */}
-      <header className="sticky top-0 z-30 bg-[#fdf8f8]/90 backdrop-blur-md border-b border-[#e5e2e1]">
-        <div className="max-w-5xl mx-auto px-6 lg:px-8 h-20 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="w-6 h-6 bg-[#111111] flex items-center justify-center">
-              <span className="text-white text-xs font-bold" style={{ fontFamily: "'Newsreader', serif" }}>P</span>
-            </span>
-            <span className="text-lg font-semibold text-[#111111]" style={{ fontFamily: "'Newsreader', serif" }}>
-              Portfolia
-            </span>
-          </Link>
-          <nav className="hidden sm:flex items-center gap-8 text-sm text-[#444748] font-bold uppercase tracking-widest" style={{ fontFamily: "'Inter', sans-serif" }}>
-            <a href="#features" className="hover:text-[#111111] transition-colors">Features</a>
-            <a href="#about" className="hover:text-[#111111] transition-colors">About</a>
-          </nav>
-          <div className="flex items-center gap-4">
-            <Link
-              to="/login"
-              className="text-xs font-bold text-[#111111] uppercase tracking-widest hover:opacity-70 transition-opacity px-3 py-2"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              Sign in
-            </Link>
-            <Link
-              to="/register"
-              className="text-xs font-bold bg-[#111111] text-white px-4 py-2 uppercase tracking-widest hover:bg-[#333] transition-colors border border-[#111111]"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              Get started
-            </Link>
-          </div>
-        </div>
-      </header>
+      {/* ══════════════════════════════════════════════════
+          HERO — full-screen shader + framer-motion
+      ══════════════════════════════════════════════════ */}
+      <PortfoliaHero />
 
-      <HorizonHero />
+      {/* ══════════════════════════════════════════════════
+          FEATURES — Spline 3D panel + editorial cards
+      ══════════════════════════════════════════════════ */}
+      <FeaturesSection />
 
-      <section className="flex-1 max-w-5xl mx-auto px-6 lg:px-8">
-
-        {/* Decorative rule */}
-        <div className="mt-20 mb-16 flex items-center gap-4">
-          <div className="flex-1 h-px bg-[#e5e2e1]" />
-          <span className="text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
-            Everything you need
-          </span>
-          <div className="flex-1 h-px bg-[#e5e2e1]" />
-        </div>
-
-        {/* Features */}
-        <div id="features" className="grid sm:grid-cols-3 gap-8 mt-8">
-          {features.map(({ icon: Icon, title, desc }) => (
-            <div
-              key={title}
-              className="bg-white border border-[#e5e2e1] p-8 hover:border-[#111111] transition-colors"
-            >
-              <div className="w-10 h-10 bg-[#f1edec] border border-[#e5e2e1] flex items-center justify-center mb-6">
-                <Icon size={20} className="text-[#111111]" />
-              </div>
-              <h3
-                className="text-2xl font-bold text-[#111111] mb-3"
-                style={{ fontFamily: "'Newsreader', serif" }}
-              >
-                {title}
-              </h3>
-              <p className="text-base text-[#444748] leading-relaxed font-normal" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                {desc}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* About section */}
-        <div id="about" className="mt-32 border-t border-[#e5e2e1] pt-24 pb-12">
-          <div className="max-w-2xl">
+      {/* ══════════════════════════════════════════════════
+          ABOUT
+      ══════════════════════════════════════════════════ */}
+      <section
+        id="about"
+        className="w-full max-w-5xl mx-auto px-6 lg:px-8 py-32 border-t border-[#e5e2e1]"
+      >
+        <div className="grid md:grid-cols-2 gap-16 items-center">
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+          >
             <p
               className="text-xs font-bold uppercase tracking-widest text-[#747878] mb-6"
               style={{ fontFamily: "'Inter', sans-serif" }}
@@ -110,25 +45,119 @@ export default function Landing({ currentUser }) {
               About
             </p>
             <h2
-              className="text-4xl font-bold text-[#111111] mb-6"
+              className="text-4xl font-bold text-[#111111] mb-6 leading-tight"
               style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em', lineHeight: '1.2' }}
             >
               Building the foundation for academic and professional legacy.
             </h2>
-            <p className="text-lg text-[#444748] leading-relaxed font-normal" style={{ fontFamily: "'Manrope', sans-serif" }}>
-              Portfolia was built for the German University in Cairo ecosystem — connecting students
-              with instructors who guide them, and employers who hire them. Clean design, zero clutter.
+            <p
+              className="text-base text-[#444748] leading-relaxed"
+              style={{ fontFamily: "'Manrope', sans-serif" }}
+            >
+              Portfolia was built for the German University in Cairo ecosystem — connecting
+              students with instructors who guide them, and employers who hire them.
+              Clean design, zero clutter.
             </p>
-          </div>
+          </motion.div>
+
+          {/* Stats */}
+          <motion.div
+            className="grid grid-cols-2 gap-px bg-[#e5e2e1] border border-[#e5e2e1]"
+            initial={{ opacity: 0, x: 24 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+          >
+            {[
+              { val: '3 roles', label: 'Student · Instructor · Employer' },
+              { val: '∞ Projects', label: 'Unlimited project documentation' },
+              { val: '100% free', label: 'For every GUC student' },
+              { val: '1 platform', label: 'One place for your entire career' },
+            ].map(({ val, label }) => (
+              <div key={val} className="bg-white p-8 flex flex-col justify-between">
+                <span
+                  className="text-2xl font-black text-[#111111] mb-2 block"
+                  style={{ fontFamily: "'Newsreader', serif" }}
+                >
+                  {val}
+                </span>
+                <span
+                  className="text-xs text-[#747878] uppercase tracking-wider leading-relaxed"
+                  style={{ fontFamily: "'Inter', sans-serif" }}
+                >
+                  {label}
+                </span>
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ══════════════════════════════════════════════════
+          CTA BAND
+      ══════════════════════════════════════════════════ */}
+      <section className="w-full bg-[#111111] py-24 px-6">
+        <div className="max-w-3xl mx-auto text-center">
+          <motion.h2
+            className="text-4xl md:text-5xl font-bold text-[#fdf8f8] mb-6 leading-tight"
+            style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em' }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            Ready to build your legacy?
+          </motion.h2>
+          <motion.p
+            className="text-base text-[#e5e2e1]/60 mb-10"
+            style={{ fontFamily: "'Manrope', sans-serif" }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            Join students already documenting their journey on Portfolia.
+          </motion.p>
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.3 }}
+          >
+            <Link
+              to="/register"
+              className="inline-flex items-center justify-center bg-[#fdf8f8] text-[#111111] px-10 py-4 text-sm font-bold uppercase tracking-widest hover:bg-white transition-colors border border-[#fdf8f8]"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              Create Account
+            </Link>
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center text-[#fdf8f8]/80 border border-[#fdf8f8]/30 px-10 py-4 text-sm font-bold uppercase tracking-widest hover:border-[#fdf8f8]/60 hover:text-[#fdf8f8] transition-all"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              Sign In
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════════
+          FOOTER
+      ══════════════════════════════════════════════════ */}
       <footer className="border-t border-[#e5e2e1] py-8 px-6 bg-white">
         <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>
-            © 2026 Portfolia. All rights reserved.
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="w-5 h-5 bg-[#111111] flex items-center justify-center">
+              <span className="text-white text-[10px] font-bold" style={{ fontFamily: "'Newsreader', serif" }}>P</span>
+            </span>
+            <span
+              className="text-xs font-semibold uppercase tracking-wider text-[#747878]"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              © 2026 Portfolia — GUC Career Platform
+            </span>
+          </div>
           <div className="flex items-center gap-4">
             <a href="#" className="text-[#747878] hover:text-[#111111] transition-colors"><GitFork size={16} /></a>
             <a href="#" className="text-[#747878] hover:text-[#111111] transition-colors"><Globe size={16} /></a>
