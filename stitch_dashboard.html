@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolia - Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@500;600;700;800&amp;family=Roboto:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "ink-subtle": "#E5E7EB",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-fixed": "#e9ddff",
+                        "error-container": "#ffdad6",
+                        "background": "#fdf8f8",
+                        "on-surface-variant": "#444748",
+                        "text-primary": "#111827",
+                        "primary-fixed": "#e5e2e1",
+                        "outline-variant": "#c4c7c7",
+                        "secondary": "#6b38d4",
+                        "outline": "#747878",
+                        "text-secondary": "#4B5563",
+                        "on-secondary-fixed-variant": "#5516be",
+                        "on-tertiary-fixed": "#1d1b1a",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "secondary-fixed-dim": "#d0bcff",
+                        "surface-bright": "#fdf8f8",
+                        "on-surface": "#1c1b1b",
+                        "success": "#16A34A",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-container": "#1d1b1a",
+                        "primary-container": "#1c1b1b",
+                        "inverse-primary": "#c8c6c5",
+                        "surface-tint": "#5f5e5e",
+                        "on-primary-container": "#858383",
+                        "surface-dim": "#ddd9d8",
+                        "tertiary-fixed": "#e6e1df",
+                        "on-tertiary-container": "#868381",
+                        "tertiary": "#000000",
+                        "on-background": "#1c1b1b",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "warning": "#D97706",
+                        "surface-container-high": "#ebe7e6",
+                        "surface-container": "#f1edec",
+                        "surface-container-low": "#f7f3f2",
+                        "on-primary-fixed": "#1c1b1b",
+                        "secondary-container": "#8455ef",
+                        "surface": "#FFFFFF",
+                        "on-secondary-fixed": "#23005c",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#cac6c3",
+                        "primary": "#000000",
+                        "on-primary-fixed-variant": "#474646",
+                        "on-error": "#ffffff",
+                        "danger": "#DC2626",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "inverse-surface": "#313030"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "unit-lg": "16px",
+                        "unit-sm": "8px",
+                        "unit-xl": "24px",
+                        "unit-xs": "4px",
+                        "unit-xxl": "32px",
+                        "unit-md": "12px",
+                        "gutter": "16px",
+                        "container-max": "1280px"
+                    },
+                    fontFamily: {
+                        "headline-sm": ["Montserrat", "sans-serif"],
+                        "label-caps": ["Inter", "sans-serif"],
+                        "display-xl": ["Montserrat", "sans-serif"],
+                        "body-md": ["Roboto", "sans-serif"],
+                        "headline-md": ["Montserrat", "sans-serif"],
+                        "display-lg": ["Montserrat", "sans-serif"],
+                        "body-sm": ["Roboto", "sans-serif"],
+                        "body-lg": ["Roboto", "sans-serif"]
+                    },
+                    fontSize: {
+                        "headline-sm": ["20px", { lineHeight: "1.3", fontWeight: "700" }],
+                        "label-caps": ["13px", { lineHeight: "1", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "display-xl": ["40px", { lineHeight: "1.1", letterSpacing: "-0.02em", fontWeight: "800" }],
+                        "body-md": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "headline-md": ["28px", { lineHeight: "1.2", fontWeight: "700" }],
+                        "display-lg": ["36px", { lineHeight: "1.1", letterSpacing: "-0.01em", fontWeight: "800" }],
+                        "body-sm": ["14px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "body-lg": ["18px", { lineHeight: "1.7", fontWeight: "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #fdf8f8; color: #111827; }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden bg-background text-text-primary">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full w-64 border-r border-r border-zinc-200 dark:border-zinc-800 flat no shadows flex flex-col h-full py-6 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 z-50">
+<div class="px-6 mb-8">
+<h2 class="font-headline-md text-headline-md text-zinc-900 dark:text-zinc-50">Portfolia</h2>
+<p class="font-label-caps text-label-caps uppercase tracking-tight text-zinc-500 mt-1">SaaS Platform</p>
+</div>
+<nav class="flex-1 overflow-y-auto">
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-900 dark:text-zinc-50 border-r-2 border-zinc-900 dark:border-zinc-50 bg-zinc-50 dark:bg-zinc-900 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">folder_special</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight">Projects</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">work</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight">Internships</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight">Profile</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 hover:bg-zinc-50 dark:hover:bg-zinc-900 transition-all duration-150" href="#">
+<span class="material-symbols-outlined">shield_person</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight">Admin</span>
+</a>
+</li>
+</ul>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col ml-64 relative">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 z-40 border-b border-zinc-200 dark:border-zinc-800 flat no shadows flex justify-between items-center h-16 px-6 w-full bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-50 sticky">
+<div class="flex-1 flex items-center">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400">search</span>
+<input class="w-full bg-transparent border-b border-outline-variant focus:border-secondary focus:ring-0 focus:outline-none pl-10 pr-4 py-2 font-body-sm text-body-sm text-text-primary placeholder:text-text-secondary transition-colors duration-200 ease-in-out" placeholder="Search..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-50 transition-colors duration-200 ease-in-out">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline-variant">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A close-up, high-contrast portrait of a young professional woman. The lighting is crisp and even, reflecting a modern, minimalist corporate aesthetic. The background is pure white, emphasizing clarity and focus. The overall mood is confident and clean." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBZB6PyQ8E3IrD_sfv_W0C7QS_Bl4B6OgvPOjnMwmU3f2O7PE34dkmuJrQ62gCOyJC6mpQ9tMI8UXJTfIjM8uyKnteqbyd7DTHrXO4Cr48uEt_y9-IUn7nmm2tvZlY7bVsNX6LriJBNi-4w1OLRuCSfnzWuJ11fmkaXmNTkEDhXnQEqb4L4RIsOF-T1tH9T0g6CgTny5UzaH8nGEm9ziOETpjyqc1bhgtECLCKs74JxkNEYTy1jqa-WS515yIFSB0-Bekua-oEggOY"/>
+</div>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto p-unit-xxl bg-background">
+<div class="max-w-container-max mx-auto space-y-unit-xxl">
+<header>
+<h1 class="font-display-lg text-display-lg text-text-primary">Dashboard Overview</h1>
+<p class="font-body-md text-body-md text-text-secondary mt-2">Your professional activity at a glance.</p>
+</header>
+<!-- Metrics Grid -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-unit-xl">
+<div class="bg-surface border border-outline-variant p-unit-lg flex flex-col justify-between hover:border-primary transition-colors group">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-tight">Total Projects</span>
+<span class="material-symbols-outlined text-outline">folder_open</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-xl text-display-xl text-text-primary">24</span>
+<span class="font-body-sm text-body-sm text-success flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%</span>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant p-unit-lg flex flex-col justify-between hover:border-primary transition-colors group">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-tight">Internship Applications</span>
+<span class="material-symbols-outlined text-outline">description</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-xl text-display-xl text-text-primary">8</span>
+<span class="font-body-sm text-body-sm text-text-secondary flex items-center">Pending Review</span>
+</div>
+</div>
+<div class="bg-surface border border-outline-variant p-unit-lg flex flex-col justify-between hover:border-primary transition-colors group">
+<div class="flex items-center justify-between mb-4">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-tight">New Notifications</span>
+<span class="material-symbols-outlined text-outline">inbox</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-xl text-display-xl text-text-primary">15</span>
+<span class="font-body-sm text-body-sm text-warning flex items-center">Requires Attention</span>
+</div>
+</div>
+</section>
+<!-- Activity Feed -->
+<section class="mt-unit-xxl">
+<h2 class="font-headline-md text-headline-md text-text-primary mb-unit-lg">Activity Feed</h2>
+<div class="bg-surface border border-outline-variant rounded-DEFAULT">
+<div class="flex items-start gap-unit-lg p-unit-lg border-b border-ink-subtle hover:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0 mt-1">
+<img alt="Jane Doe Profile" class="w-full h-full object-cover" data-alt="A sharp, well-lit headshot of a male professional against a completely white, blank background. The image has high contrast, reminiscent of premium editorial print photography. The mood is serious and structured." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBpHh-h8eaWG-XQFhsweeWqrmr39PILGMI_YNZvGB9sFgkjlVoKO23iwntE4nJlhprAsgQq6yCkD1OKMnNlu4o5CyF3OT-l2rOavIrLt5PN5-J9SK4PdeefNFAps0Dyhb722GEC7StYUA5cf3U0rECPaXooZlFP1o3k260-M1V6NXmaruXa-Yzq4jIu_MN4VNR6n87Rh6VpMF-E9p3rqxl5f_uSUPAtRYyD2Jc_Bw70v8Z1Hu5TICO3sJdz5TTgnprwv397tII9Gmw"/>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-text-primary"><span class="font-bold">Jane Doe</span> uploaded a new project: <span class="underline decoration-outline-variant hover:decoration-primary cursor-pointer font-medium">Q4 Financial Analysis</span></p>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">2 hours ago</p>
+</div>
+<button class="text-text-secondary hover:text-text-primary mt-1">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="flex items-start gap-unit-lg p-unit-lg border-b border-ink-subtle hover:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-variant border border-outline-variant flex-shrink-0 mt-1 flex items-center justify-center">
+<span class="material-symbols-outlined text-text-secondary">visibility</span>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-text-primary"><span class="font-bold">Company X</span> viewed your profile.</p>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">5 hours ago</p>
+</div>
+<button class="text-text-secondary hover:text-text-primary mt-1">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<div class="flex items-start gap-unit-lg p-unit-lg hover:bg-surface-container-low transition-colors">
+<div class="w-10 h-10 rounded-full bg-surface-variant overflow-hidden border border-outline-variant flex-shrink-0 mt-1">
+<img alt="Sarah Smith Profile" class="w-full h-full object-cover" data-alt="A bright, minimalist portrait of a woman looking directly at the camera. The background is a stark, textured off-white resembling fine paper. The lighting creates sharp lines and deep shadows, fitting a strict editorial layout style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUAfC6wXuzacqWH8xZJe3UBtwdG6HeISR-4CyNsAI8O-d1ytkKRrgTAh3VYFxwTj2arQYTjFJU9dxqRVXL7hxTCRScQzcQUpPc8asjEz6E4Ur3IC9W3WpuS2WzVnd-ZmV1NBxBBIbum6fOuP3ZUmzblNF9OQmsQz4gKi0uAjo516itfKqpGgrZ0rE1gmRERMU0hSGepIwbK2MuWjxjM_ypSJssgSy_vAYO5OC1W2PkKA1O5RQPC6F9goFd8rVyF2rZbi6sAwbvxRk"/>
+</div>
+<div class="flex-1">
+<p class="font-body-md text-body-md text-text-primary"><span class="font-bold">Sarah Smith</span> commented on your internship application for <span class="underline decoration-outline-variant hover:decoration-primary cursor-pointer font-medium">Design Lead</span>.</p>
+<p class="font-body-sm text-body-sm text-text-secondary mt-1">Yesterday at 3:45 PM</p>
+</div>
+<button class="text-text-secondary hover:text-text-primary mt-1">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+</div>
+<div class="mt-unit-md text-center">
+<button class="font-label-caps text-label-caps text-text-secondary hover:text-text-primary uppercase tracking-tight underline decoration-outline-variant hover:decoration-primary transition-colors">View All Activity</button>
+</div>
+</section>
+</div>
+</main>
+</div>
+</body></html>

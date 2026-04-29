@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolia - Projects</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Montserrat:wght@600;700;800&amp;family=Roboto:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "ink-subtle": "#E5E7EB",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e5e2e1",
+                        "secondary-fixed": "#e9ddff",
+                        "error-container": "#ffdad6",
+                        "background": "#fdf8f8",
+                        "on-surface-variant": "#444748",
+                        "text-primary": "#111827",
+                        "primary-fixed": "#e5e2e1",
+                        "outline-variant": "#c4c7c7",
+                        "secondary": "#6b38d4",
+                        "outline": "#747878",
+                        "text-secondary": "#4B5563",
+                        "on-secondary-fixed-variant": "#5516be",
+                        "on-tertiary-fixed": "#1d1b1a",
+                        "surface-variant": "#e5e2e1",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "secondary-fixed-dim": "#d0bcff",
+                        "surface-bright": "#fdf8f8",
+                        "on-surface": "#1c1b1b",
+                        "success": "#16A34A",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#fffbff",
+                        "tertiary-container": "#1d1b1a",
+                        "primary-container": "#1c1b1b",
+                        "inverse-primary": "#c8c6c5",
+                        "surface-tint": "#5f5e5e",
+                        "on-primary-container": "#858383",
+                        "surface-dim": "#ddd9d8",
+                        "tertiary-fixed": "#e6e1df",
+                        "on-tertiary-container": "#868381",
+                        "tertiary": "#000000",
+                        "on-background": "#1c1b1b",
+                        "on-primary": "#ffffff",
+                        "inverse-on-surface": "#f4f0ef",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "warning": "#D97706",
+                        "surface-container-high": "#ebe7e6",
+                        "surface-container": "#f1edec",
+                        "surface-container-low": "#f7f3f2",
+                        "on-primary-fixed": "#1c1b1b",
+                        "secondary-container": "#8455ef",
+                        "surface": "#FFFFFF",
+                        "on-secondary-fixed": "#23005c",
+                        "on-tertiary": "#ffffff",
+                        "tertiary-fixed-dim": "#cac6c3",
+                        "primary": "#000000",
+                        "on-primary-fixed-variant": "#474646",
+                        "on-error": "#ffffff",
+                        "danger": "#DC2626",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "inverse-surface": "#313030"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "unit-lg": "16px",
+                        "unit-sm": "8px",
+                        "unit-xl": "24px",
+                        "unit-xs": "4px",
+                        "unit-xxl": "32px",
+                        "unit-md": "12px",
+                        "gutter": "16px",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Montserrat", "sans-serif"],
+                        "label-caps": ["Inter", "sans-serif"],
+                        "display-xl": ["Montserrat", "sans-serif"],
+                        "body-md": ["Roboto", "sans-serif"],
+                        "headline-md": ["Montserrat", "sans-serif"],
+                        "display-lg": ["Montserrat", "sans-serif"],
+                        "body-sm": ["Roboto", "sans-serif"],
+                        "body-lg": ["Roboto", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["20px", { "lineHeight": "1.3", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-xl": ["40px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-md": ["16px", { "lineHeight": "1.65", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "display-lg": ["36px", { "lineHeight": "1.15", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "body-sm": ["14px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.7", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Editorial Focus Outline */
+        *:focus-visible {
+            outline: 2px solid #8B5CF6;
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body class="bg-background text-text-primary font-body-md min-h-screen flex antialiased">
+<!-- SideNavBar (Web Only) -->
+<aside class="hidden md:flex bg-surface-container-lowest text-text-primary font-label-caps text-[13px] uppercase tracking-tight fixed left-0 top-0 h-full w-64 border-r border-ink-subtle flex-col h-full py-6 z-50">
+<div class="px-6 mb-8 flex flex-col items-start gap-4">
+<span class="text-xl font-black font-display-lg text-text-primary uppercase tracking-tighter">PORTFOLIA</span>
+<span class="font-label-caps text-label-caps text-text-secondary">SaaS Platform</span>
+</div>
+<nav class="flex flex-col flex-1 w-full gap-1">
+<a class="flex items-center gap-3 px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-surface-container transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<!-- Active State for Projects -->
+<a class="flex items-center gap-3 px-4 py-3 text-text-primary border-r-2 border-primary bg-surface-container transition-all duration-150 font-bold" href="#">
+<span class="material-symbols-outlined" data-icon="folder_special">folder_special</span>
+                Projects
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-surface-container transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="work">work</span>
+                Internships
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-surface-container transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+                Profile
+            </a>
+<a class="flex items-center gap-3 px-4 py-3 text-text-secondary hover:text-text-primary hover:bg-surface-container transition-all duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="shield_person">shield_person</span>
+                Admin
+            </a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col md:ml-64 w-full relative min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface-container-lowest text-text-primary font-label-caps tracking-tight docked full-width top-0 z-40 border-b border-ink-subtle flex justify-between items-center h-16 px-6 w-full sticky">
+<!-- Mobile Brand (hidden on desktop) -->
+<div class="md:hidden flex items-center gap-2">
+<span class="text-xl font-black font-display-lg text-text-primary uppercase tracking-tighter">PORTFOLIA</span>
+</div>
+<!-- Desktop Placeholder (Brand is in sidebar) -->
+<div class="hidden md:block flex-1">
+<h1 class="font-headline-md text-headline-md capitalize">Projects Directory</h1>
+</div>
+<div class="flex items-center gap-4">
+<button aria-label="notifications" class="text-text-secondary hover:text-text-primary hover:bg-surface-container transition-colors duration-200 ease-in-out p-2 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high overflow-hidden border border-ink-subtle">
+<img alt="User profile photo" class="w-full h-full object-cover" data-alt="A highly detailed professional headshot of a person looking forward against a bright minimalist background. The lighting is soft and high-key, creating a modern, clean light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzlvZYtZZSg4MvgV8W4PUfRq9OiIY6H25Ieky0LpSO12C4b0P-ohTmQRqEtI1xPFoQ4qY__9SmZ3HKzW-82lVkHRYU59Rif4HWhOcv-ilomQ43MskMVYxmPK9OVhYHsK6ET3Wj9rgb9Sp8yBpd77_wLulJFM9roepGJmWX0W7Qi46l3Sh9W27SgI6WFtCATsAIa5Go0gD65YmtPTXCBowSx5Clga6otfLxFICOOouYHr6JNQiU7eTqQWbF-joObBk1QnqRg4SbDkE"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-unit-xxl md:p-[64px] max-w-container-max mx-auto w-full">
+<!-- Page Header -->
+<div class="mb-unit-xxl">
+<h2 class="font-display-lg text-display-lg mb-unit-sm">My Projects</h2>
+<p class="font-body-lg text-body-lg text-text-secondary max-w-2xl">A collection of technical and academic works spanning multiple disciplines and technologies.</p>
+</div>
+<!-- Controls -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-unit-xl pb-unit-md border-b border-ink-subtle">
+<div class="flex gap-2">
+<button class="font-label-caps text-label-caps uppercase tracking-tight bg-primary text-on-primary px-4 py-2 hover:bg-surface-container-high hover:text-primary transition-colors border border-primary">All</button>
+<button class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-lowest text-text-primary px-4 py-2 hover:bg-surface-container-high transition-colors border border-ink-subtle">Public</button>
+<button class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-lowest text-text-primary px-4 py-2 hover:bg-surface-container-high transition-colors border border-ink-subtle">Private</button>
+</div>
+<div class="flex items-center gap-2">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary text-[20px]" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 border-b border-ink-subtle bg-transparent focus:border-secondary focus:outline-none focus:ring-0 font-body-sm text-body-sm w-64 text-text-primary placeholder:text-text-secondary" placeholder="Search projects..." type="text"/>
+</div>
+</div>
+</div>
+<!-- Project Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-unit-xl">
+<!-- Card 1 -->
+<article class="bg-surface-container-lowest border border-ink-subtle p-unit-lg flex flex-col gap-unit-md hover:border-primary transition-colors duration-200 group">
+<div class="flex justify-between items-start mb-unit-xs">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-tight">CS401: Advanced Algorithms</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container text-text-primary px-2 py-1 flex items-center gap-1 border border-ink-subtle">
+<span class="material-symbols-outlined text-[14px]" data-icon="public">public</span> Public
+                        </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-secondary transition-colors">Distributed Hash Table Implementation</h3>
+<p class="font-body-sm text-body-sm text-text-secondary flex-1 line-clamp-3">A custom implementation of a distributed hash table mimicking the Chord protocol, designed for robust peer-to-peer file sharing and high availability in volatile network conditions.</p>
+<div class="flex flex-wrap gap-2 mt-unit-sm pt-unit-md border-t border-ink-subtle">
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">Go</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">Distributed Systems</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">Networking</span>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-surface-container-lowest border border-ink-subtle p-unit-lg flex flex-col gap-unit-md hover:border-primary transition-colors duration-200 group">
+<div class="flex justify-between items-start mb-unit-xs">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-tight">Independent Study</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container text-text-primary px-2 py-1 flex items-center gap-1 border border-ink-subtle">
+<span class="material-symbols-outlined text-[14px]" data-icon="lock">lock</span> Private
+                        </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-secondary transition-colors">Predictive Asset Modeling Framework</h3>
+<p class="font-body-sm text-body-sm text-text-secondary flex-1 line-clamp-3">A machine learning pipeline utilizing historical market data to predict short-term volatility in tech equities. Incorporates sentiment analysis from financial news APIs.</p>
+<div class="flex flex-wrap gap-2 mt-unit-sm pt-unit-md border-t border-ink-subtle">
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">Python</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">TensorFlow</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">Pandas</span>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-surface-container-lowest border border-ink-subtle p-unit-lg flex flex-col gap-unit-md hover:border-primary transition-colors duration-200 group">
+<div class="flex justify-between items-start mb-unit-xs">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-tight">HCI 320: UI Engineering</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container text-text-primary px-2 py-1 flex items-center gap-1 border border-ink-subtle">
+<span class="material-symbols-outlined text-[14px]" data-icon="public">public</span> Public
+                        </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-secondary transition-colors">Accessibility-First Component Library</h3>
+<p class="font-body-sm text-body-sm text-text-secondary flex-1 line-clamp-3">A React component library built strictly adhering to WCAG 2.1 AA standards, featuring robust keyboard navigation, ARIA labeling, and high-contrast editorial themes.</p>
+<div class="flex flex-wrap gap-2 mt-unit-sm pt-unit-md border-t border-ink-subtle">
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">React</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">TypeScript</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">Tailwind CSS</span>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="bg-surface-container-lowest border border-ink-subtle p-unit-lg flex flex-col gap-unit-md hover:border-primary transition-colors duration-200 group">
+<div class="flex justify-between items-start mb-unit-xs">
+<span class="font-label-caps text-label-caps text-text-secondary uppercase tracking-tight">Personal Portfolio</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container text-text-primary px-2 py-1 flex items-center gap-1 border border-ink-subtle">
+<span class="material-symbols-outlined text-[14px]" data-icon="public">public</span> Public
+                        </span>
+</div>
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-secondary transition-colors">Editorial CMS Concept</h3>
+<p class="font-body-sm text-body-sm text-text-secondary flex-1 line-clamp-3">A custom headless CMS built to serve minimal, print-inspired web layouts. Focuses on typographic hierarchy and whitespace management over traditional grid structures.</p>
+<div class="flex flex-wrap gap-2 mt-unit-sm pt-unit-md border-t border-ink-subtle">
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">Next.js</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">Prisma</span>
+<span class="font-label-caps text-label-caps uppercase tracking-tight bg-surface-container-high text-text-primary px-2 py-1">PostgreSQL</span>
+</div>
+</article>
+</div>
+</main>
+</div>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest border-t border-ink-subtle flex justify-around items-center h-16 z-50">
+<a class="flex flex-col items-center justify-center w-full h-full text-text-secondary font-label-caps uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-caps text-[10px] mt-1">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-text-primary font-bold relative font-label-caps uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="folder_special">folder_special</span>
+<span class="font-label-caps text-[10px] mt-1">Projects</span>
+<div class="absolute top-0 w-8 h-1 bg-primary rounded-b-sm"></div>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-text-secondary font-label-caps uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="work">work</span>
+<span class="font-label-caps text-[10px] mt-1">Internships</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-text-secondary font-label-caps uppercase tracking-tight" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-caps text-[10px] mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

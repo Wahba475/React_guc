@@ -1,115 +1,95 @@
 import AppLayout from '../components/AppLayout'
 import StatCard from '../components/StatCard'
-import { projects } from '../data/projects'
 import { internships } from '../data/internships'
-import { FolderKanban, Briefcase, Star, Clock } from 'lucide-react'
+import { FolderKanban, FileText, Bell } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const activityFeed = [
-  { id: 1, text: 'You uploaded a new project: AI Study Assistant', time: '2 hours ago' },
-  { id: 2, text: 'TechCorp Egypt viewed your profile.', time: '5 hours ago' },
-  { id: 3, text: 'New internship posted: Frontend Developer at Instabug.', time: 'Yesterday at 3:45 PM' },
-  { id: 4, text: 'Dr. Khaled Mansour commented on your project.', time: '2 days ago' },
+  { id: 1, text: 'You uploaded a new project: AI Study Assistant', time: '2 hours ago', icon: 'M' },
+  { id: 2, text: 'TechCorp Egypt viewed your profile.', time: '5 hours ago', icon: '👁' },
+  { id: 3, text: 'New internship posted: Frontend Developer at Instabug.', time: 'Yesterday at 3:45 PM', icon: 'B' },
 ]
 
-export default function Dashboard({ currentUser, onLogout }) {
-  const myProjects = projects.filter((p) => p.ownerId === currentUser.id)
+export default function Dashboard({ currentUser, onLogout, projects }) {
+  const myProjects = projects?.filter((p) => String(p.ownerId) === String(currentUser.id)) || []
   const openInternships = internships.length
-  const completedProjects = myProjects.filter((p) => p.status === 'Completed').length
-  const skills = currentUser.skills?.length ?? 0
 
   return (
     <AppLayout currentUser={currentUser} onLogout={onLogout}>
-      {/* Page header */}
-      <div className="mb-8">
-        <p
-          className="text-xs font-bold uppercase tracking-widest text-[#747878] mb-1"
-          style={{ fontFamily: "'Manrope', sans-serif", letterSpacing: '0.1em' }}
-        >
-          Overview
-        </p>
-        <h1
-          className="text-2xl font-semibold text-[#111111]"
-          style={{ fontFamily: "'Newsreader', serif" }}
-        >
-          Dashboard
-        </h1>
-        <p className="text-sm text-[#747878] mt-1">
-          Welcome back, <strong className="text-[#111111]">{currentUser.name}</strong>. Here's your activity at a glance.
-        </p>
-      </div>
+      <div className="max-w-[1280px] mx-auto w-full space-y-12">
+        {/* Page header */}
+        <header>
+          <h1
+            className="text-4xl md:text-5xl font-bold text-[#111111]"
+            style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em', lineHeight: '1.15' }}
+          >
+            Dashboard Overview
+          </h1>
+          <p className="text-lg text-[#747878] mt-2" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            Your professional activity at a glance.
+          </p>
+        </header>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <StatCard label="My Projects" value={myProjects.length} icon={FolderKanban} note="Total projects" />
-        <StatCard label="Completed" value={completedProjects} icon={Star} note="Finished projects" />
-        <StatCard label="Internships" value={openInternships} icon={Briefcase} note="Open listings" />
-        <StatCard label="Skills" value={skills} icon={Clock} note="Listed on profile" />
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-6">
-        {/* Recent projects */}
-        <div className="lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2
-              className="text-sm font-bold text-[#111111] uppercase tracking-wide"
-              style={{ fontFamily: "'Manrope', sans-serif" }}
-            >
-              Recent Projects
-            </h2>
-            <Link
-              to="/projects"
-              className="text-xs text-[#6b38d4] font-semibold hover:underline"
-              style={{ fontFamily: "'Manrope', sans-serif" }}
-            >
-              View all →
-            </Link>
-          </div>
-          <div className="space-y-3">
-            {projects.slice(0, 3).map((p) => (
-              <Link
-                key={p.id}
-                to={`/projects/${p.id}`}
-                className="flex items-center justify-between bg-white border border-[#e5e2e1] rounded-lg px-4 py-3.5 hover:border-[#c4c7c7] hover:shadow-sm transition-all group"
-              >
-                <div className="min-w-0">
-                  <p
-                    className="text-sm font-semibold text-[#111111] group-hover:text-[#6b38d4] transition-colors truncate"
-                    style={{ fontFamily: "'Manrope', sans-serif" }}
-                  >
-                    {p.title}
-                  </p>
-                  <p className="text-xs text-[#747878] mt-0.5 truncate">{p.tags.slice(0, 3).join(' · ')}</p>
-                </div>
-                <span
-                  className={`ml-3 flex-shrink-0 text-xs font-semibold px-2 py-0.5 rounded
-                    ${p.status === 'Completed' ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
-                >
-                  {p.status}
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
+        {/* Stats */}
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard 
+            label="Total Projects" 
+            value={myProjects.length} 
+            icon={FolderKanban} 
+            note="↑ 12%" 
+            highlightNote={true}
+          />
+          <StatCard 
+            label="Internship Applications" 
+            value={openInternships} 
+            icon={FileText} 
+            note="Pending Review" 
+          />
+          <StatCard 
+            label="New Notifications" 
+            value={activityFeed.length} 
+            icon={Bell} 
+            note="Requires Attention" 
+          />
+        </section>
 
         {/* Activity feed */}
-        <div>
+        <section className="mt-12">
           <h2
-            className="text-sm font-bold text-[#111111] uppercase tracking-wide mb-4"
-            style={{ fontFamily: "'Manrope', sans-serif" }}
+            className="text-2xl font-bold text-[#111111] mb-6"
+            style={{ fontFamily: "'Newsreader', serif" }}
           >
             Activity Feed
           </h2>
-          <div className="bg-white border border-[#e5e2e1] rounded-lg divide-y divide-[#f1edec]">
+          <div className="bg-white border border-[#e5e2e1]">
             {activityFeed.map((item) => (
-              <div key={item.id} className="px-4 py-3.5">
-                <p className="text-sm text-[#111111] leading-snug">{item.text}</p>
-                <p className="text-xs text-[#c4c7c7] mt-1">{item.time}</p>
+              <div key={item.id} className="flex items-start gap-4 p-6 border-b border-[#e5e2e1] hover:bg-[#fdf8f8] transition-colors last:border-b-0">
+                <div className="w-10 h-10 bg-[#f1edec] border border-[#e5e2e1] flex-shrink-0 mt-1 flex items-center justify-center">
+                  <span className="text-[#111111] font-bold text-sm" style={{ fontFamily: "'Inter', sans-serif" }}>{item.icon}</span>
+                </div>
+                <div className="flex-1">
+                  <p className="text-base text-[#111111]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                    {item.text}
+                  </p>
+                  <p className="text-sm text-[#747878] mt-1" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                    {item.time}
+                  </p>
+                </div>
+                <button className="text-[#747878] hover:text-[#111111] mt-1 p-1">
+                  •••
+                </button>
               </div>
             ))}
           </div>
-        </div>
+          <div className="mt-6 text-center">
+            <button
+              className="text-xs font-semibold uppercase tracking-wider text-[#747878] hover:text-[#111111] underline decoration-[#c4c7c7] hover:decoration-[#111111] transition-colors"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              View All Activity
+            </button>
+          </div>
+        </section>
       </div>
     </AppLayout>
   )

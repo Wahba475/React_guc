@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portfolia - Landing Page</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700&amp;family=Newsreader:wght@400;500;600;700&amp;family=Montserrat:wght@400;500;600;700&amp;family=Roboto:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-highest": "#e5e2e1",
+                        "on-secondary-fixed-variant": "#5516be",
+                        "on-primary": "#ffffff",
+                        "on-primary-fixed-variant": "#474646",
+                        "surface-container-lowest": "#ffffff",
+                        "primary": "#000000",
+                        "on-primary-container": "#858383",
+                        "secondary-fixed-dim": "#d0bcff",
+                        "secondary-fixed": "#e9ddff",
+                        "surface-variant": "#e5e2e1",
+                        "outline-variant": "#c4c7c7",
+                        "surface-container-low": "#f7f3f2",
+                        "surface-container-high": "#ebe7e6",
+                        "secondary": "#6b38d4",
+                        "on-tertiary-fixed-variant": "#484645",
+                        "text-secondary": "#4B5563",
+                        "on-secondary-container": "#fffbff",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#c8c6c5",
+                        "text-primary": "#111827",
+                        "primary-fixed": "#e5e2e1",
+                        "surface-dim": "#ddd9d8",
+                        "surface-bright": "#fdf8f8",
+                        "on-error": "#ffffff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#8455ef",
+                        "surface-container": "#f1edec",
+                        "inverse-on-surface": "#f4f0ef",
+                        "ink-subtle": "#E5E7EB",
+                        "tertiary-container": "#1d1b1a",
+                        "surface": "#FFFFFF",
+                        "surface-tint": "#5f5e5e",
+                        "background": "#fafafa",
+                        "on-surface-variant": "#444748",
+                        "tertiary-fixed-dim": "#cac6c3",
+                        "tertiary": "#000000",
+                        "on-background": "#1c1b1b",
+                        "on-primary-fixed": "#1c1b1b",
+                        "on-tertiary-fixed": "#1d1b1a",
+                        "danger": "#DC2626",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed-dim": "#c8c6c5",
+                        "on-tertiary-container": "#868381",
+                        "error-container": "#ffdad6",
+                        "warning": "#D97706",
+                        "success": "#16A34A",
+                        "primary-container": "#1c1b1b",
+                        "on-error-container": "#93000a",
+                        "outline": "#747878",
+                        "tertiary-fixed": "#e6e1df",
+                        "on-secondary-fixed": "#23005c",
+                        "inverse-surface": "#313030",
+                        "on-surface": "#1c1b1b"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem",
+                        "saas": "12px"
+                    },
+                    "spacing": {
+                        "unit-sm": "8px",
+                        "unit-md": "12px",
+                        "container-max": "1280px",
+                        "unit-xl": "24px",
+                        "unit-lg": "16px",
+                        "unit-xxl": "32px",
+                        "unit-xs": "4px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Montserrat", "sans-serif"],
+                        "headline-md": ["Montserrat", "sans-serif"],
+                        "display-xl": ["Montserrat", "sans-serif"],
+                        "label-caps": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "headline-sm": ["Montserrat", "sans-serif"],
+                        "body-sm": ["Roboto", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "serif": ["Newsreader", "serif"],
+                        "sans": ["Inter", "sans-serif"],
+                        "montserrat": ["Montserrat", "sans-serif"],
+                        "roboto": ["Roboto", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "display-xl": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "label-caps": ["12px", { "lineHeight": "1", "letterSpacing": "0.05em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #fafafa; color: #111827; }
+        .saas-card { border: 1px solid #E5E7EB; background: #ffffff; padding: 24px; border-radius: 12px; transition: border-color 0.2s, box-shadow 0.2s; }
+        .saas-card:hover { border-color: #d1d5db; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
+        .saas-btn-primary { background: #111827; color: #ffffff; border-radius: 6px; padding: 10px 20px; font-weight: 500; font-size: 14px; transition: background-color 0.2s; }
+        .saas-btn-primary:hover { background: #374151; }
+        .saas-btn-ghost { color: #4B5563; padding: 10px 20px; font-weight: 500; font-size: 14px; transition: color 0.2s; }
+        .saas-btn-ghost:hover { color: #111827; }
+        
+        .paper-section {
+            background-color: #fdf8f8;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+        }
+    </style>
+</head>
+<body class="bg-background text-text-primary font-sans antialiased min-h-screen flex flex-col">
+<!-- TopNavBar -->
+<nav class="bg-transparent w-full absolute top-0 z-50">
+<div class="max-w-7xl mx-auto flex justify-between items-center px-8 h-24">
+<div class="text-2xl font-montserrat font-bold tracking-tight text-gray-900">Portfolia</div>
+<div class="hidden md:flex gap-8 items-center">
+<a class="text-gray-500 font-montserrat font-medium hover:text-gray-900 transition-colors" href="#">Product</a>
+<a class="text-gray-500 font-montserrat font-medium hover:text-gray-900 transition-colors" href="#">Features</a>
+<a class="text-gray-500 font-montserrat font-medium hover:text-gray-900 transition-colors" href="#">Pricing</a>
+</div>
+<div class="hidden md:flex items-center gap-4">
+<a class="saas-btn-ghost font-montserrat" href="#">Login</a>
+<button class="saas-btn-primary font-montserrat">
+                Get Started
+            </button>
+</div>
+</div>
+</nav>
+<main class="flex-grow flex flex-col items-center pt-24">
+<!-- Hero Section -->
+<section class="w-full max-w-container-max mx-auto px-unit-xl py-32 flex flex-col items-center text-center">
+<h1 class="font-display-xl text-display-xl max-w-4xl mb-8 text-gray-900 leading-tight">
+                A unified platform for projects, portfolios, and internships.
+            </h1>
+<p class="font-body-lg text-body-lg text-gray-500 max-w-2xl mb-12 leading-relaxed">
+                Portfolia brings together students, instructors, and employers in one seamless environment. Build your legacy on a foundation of clarity.
+            </p>
+<div class="flex gap-4 justify-center">
+<button class="saas-btn-primary font-montserrat px-8 py-3 text-base">Get Started</button>
+<button class="saas-btn-ghost border border-gray-200 rounded-md font-montserrat px-8 py-3 text-base hover:bg-gray-50">Learn More</button>
+</div>
+</section>
+<!-- Visual Hero Graphic -->
+<section class="w-full max-w-6xl mx-auto px-unit-xl mb-32">
+<div class="rounded-2xl overflow-hidden relative shadow-lg bg-white border border-gray-100">
+<img alt="Abstract Portfolia Graphic" class="w-full h-[600px] object-cover" data-alt="A striking digital installation art piece featuring glowing, generative geometric shapes suspended in a vast, minimalist gallery space." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAteOxaHiK4VECUIRX5ajIh3iEjhZcyNHwsxc8GXEayyxNunZl1C_tWGYQhbGqKh-vEjjzCaePJEInXcT80_9FKxOIDhx-Xm2We0JiV3F_LcdEHKM4R8ymZptLfinMH3Zk0z4g5lHNG2CMSajFtUZyXa9tqvty3cn3DExeGEIZIHKenpEmzZ_76IJ0SBSSpzprLlLN7SRJujioCONXDWj8IVDmdpU0yDO-p9zzx8dWCj58taq0T8oBMc6vuwEUnO_F9tvUZsFXTUVA"/>
+</div>
+</section>
+<!-- Features Section -->
+<section class="w-full bg-white py-32 border-t border-gray-100">
+<div class="max-w-container-max mx-auto px-unit-xl">
+<div class="text-center mb-20">
+<h2 class="font-display-lg text-display-lg text-gray-900 mb-4">Core Capabilities</h2>
+<p class="text-gray-500 max-w-2xl mx-auto font-body-lg">Everything you need to manage and showcase your academic and professional journey.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="saas-card flex flex-col items-start text-left bg-gray-50/50">
+<div class="mb-6">
+<svg class="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M2.25 12.75V12A2.25 2.25 0 014.5 9.75h15A2.25 2.25 0 0121.75 12v.75m-8.69-6.44l-2.12-2.12a1.5 1.5 0 00-1.061-.44H4.5A2.25 2.25 0 002.25 6v12a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9a2.25 2.25 0 00-2.25-2.25h-5.379a1.5 1.5 0 01-1.06-.44z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h3 class="font-montserrat font-semibold text-lg mb-3 text-gray-900">Projects</h3>
+<p class="font-roboto text-sm text-gray-500 leading-relaxed">Organize your work with structural clarity. Every project is a documented milestone.</p>
+</div>
+<div class="saas-card flex flex-col items-start text-left bg-gray-50/50">
+<div class="mb-6">
+<svg class="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h3 class="font-montserrat font-semibold text-lg mb-3 text-gray-900">Portfolios</h3>
+<p class="font-roboto text-sm text-gray-500 leading-relaxed">Present your capabilities on a clean, editorial canvas that highlights substance over flash.</p>
+</div>
+<div class="saas-card flex flex-col items-start text-left bg-gray-50/50">
+<div class="mb-6">
+<svg class="w-8 h-8 text-gray-900" fill="none" stroke="currentColor" stroke-width="1.5" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 00.75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 00-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0112 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 01-.673-.38m0 0A2.18 2.18 0 013 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 013.413-.387m7.5 0V5.25A2.25 2.25 0 0013.5 3h-3a2.25 2.25 0 00-2.25 2.25v.894m7.5 0a48.667 48.667 0 00-7.5 0M12 12.75h.008v.008H12v-.008z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<h3 class="font-montserrat font-semibold text-lg mb-3 text-gray-900">Internships</h3>
+<p class="font-roboto text-sm text-gray-500 leading-relaxed">Bridge the gap between academia and industry with verifiable skill documentation.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Contextual Content Section (Paper Style) -->
+<section class="w-full paper-section py-32 border-y border-gray-200">
+<div class="max-w-4xl mx-auto px-unit-xl">
+<div class="bg-white/80 backdrop-blur-sm p-16 rounded-2xl border border-gray-200/50 shadow-sm flex items-center justify-center text-center">
+<h2 class="font-serif text-4xl max-w-2xl text-gray-900 leading-tight">
+                    A connected system for students, instructors, and employers.
+                </h2>
+</div>
+</div>
+</section>
+</main>
+<!-- Dark Footer -->
+<footer class="bg-gray-950 text-white pt-20 pb-10">
+<div class="max-w-7xl mx-auto px-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
+<div class="col-span-1 md:col-span-1">
+<div class="font-montserrat font-bold text-xl mb-4">Portfolia</div>
+<p class="text-gray-400 text-sm font-roboto leading-relaxed">
+                        Building the foundation for academic and professional legacy.
+                    </p>
+</div>
+<div>
+<h4 class="font-montserrat font-semibold text-sm mb-6 uppercase tracking-wider text-gray-300">Product</h4>
+<ul class="space-y-4 text-sm font-roboto text-gray-400">
+<li><a class="hover:text-white transition-colors" href="#">Features</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Pricing</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Changelog</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-montserrat font-semibold text-sm mb-6 uppercase tracking-wider text-gray-300">Resources</h4>
+<ul class="space-y-4 text-sm font-roboto text-gray-400">
+<li><a class="hover:text-white transition-colors" href="#">Documentation</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Help Center</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Community</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-montserrat font-semibold text-sm mb-6 uppercase tracking-wider text-gray-300">Company</h4>
+<ul class="space-y-4 text-sm font-roboto text-gray-400">
+<li><a class="hover:text-white transition-colors" href="#">About</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Blog</a></li>
+<li><a class="hover:text-white transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+</div>
+<div class="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-roboto text-gray-500">
+<div>© 2024 Portfolia. All rights reserved.</div>
+<div class="flex gap-6">
+<a class="hover:text-white transition-colors" href="#">Privacy Policy</a>
+<a class="hover:text-white transition-colors" href="#">Terms of Service</a>
+</div>
+</div>
+</div>
+</footer>
+</body></html>

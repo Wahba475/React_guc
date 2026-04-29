@@ -1,28 +1,33 @@
-export default function StatCard({ label, value, icon: Icon, note }) {
+export default function StatCard({ label, value, icon: Icon, note, highlightNote }) {
   return (
-    <div className="bg-white border border-[#e5e2e1] rounded-lg p-5 flex flex-col gap-3 hover:border-[#c4c7c7] transition-colors">
-      <div className="flex items-center justify-between">
+    <div className="bg-white border border-[#e5e2e1] p-4 lg:p-6 flex flex-col justify-between hover:border-[#111111] transition-colors group">
+      <div className="flex items-center justify-between mb-4">
         <span
-          className="text-xs font-bold uppercase tracking-widest text-[#747878]"
-          style={{ fontFamily: "'Manrope', sans-serif", letterSpacing: '0.08em' }}
+          className="text-xs font-semibold uppercase tracking-wider text-[#747878]"
+          style={{ fontFamily: "'Inter', sans-serif" }}
         >
           {label}
         </span>
         {Icon && (
-          <span className="w-8 h-8 rounded-md bg-[#f1edec] flex items-center justify-center">
-            <Icon size={15} className="text-[#6b38d4]" />
+          <Icon size={20} className="text-[#747878]" />
+        )}
+      </div>
+      <div className="flex items-baseline gap-2">
+        <p
+          className="text-4xl font-bold text-[#111111]"
+          style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em', lineHeight: '1.1' }}
+        >
+          {value}
+        </p>
+        {note && (
+          <span 
+            className={`text-sm ${highlightNote ? 'text-green-600' : 'text-[#747878]'}`} 
+            style={{ fontFamily: "'Manrope', sans-serif" }}
+          >
+            {note}
           </span>
         )}
       </div>
-      <p
-        className="text-3xl font-bold text-[#111111]"
-        style={{ fontFamily: "'Newsreader', serif" }}
-      >
-        {value}
-      </p>
-      {note && (
-        <p className="text-xs text-[#747878]">{note}</p>
-      )}
     </div>
   )
 }

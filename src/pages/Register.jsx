@@ -25,40 +25,44 @@ const roles = [
 
 function Step1({ selected, onSelect, onNext }) {
   return (
-    <div>
-      <h2
-        className="text-2xl font-semibold text-[#111111] mb-1"
-        style={{ fontFamily: "'Newsreader', serif" }}
-      >
-        I am a…
-      </h2>
-      <p className="text-sm text-[#747878] mb-6">Choose your role to get started.</p>
-      <div className="space-y-3 mb-6">
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-col gap-2">
+        <h2
+          className="text-3xl font-bold text-[#111111]"
+          style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em' }}
+        >
+          I am a…
+        </h2>
+        <p className="text-base text-[#444748]" style={{ fontFamily: "'Inter', sans-serif" }}>
+          Choose your role to get started.
+        </p>
+      </header>
+      <div className="flex flex-col gap-4">
         {roles.map(({ id, label, icon: Icon, desc }) => (
           <button
             key={id}
             type="button"
             onClick={() => onSelect(id)}
-            className={`w-full flex items-center gap-4 px-4 py-3.5 rounded-lg border text-left transition-all
+            className={`w-full flex items-center gap-4 px-4 py-4 border text-left transition-colors rounded-none
               ${selected === id
-                ? 'border-[#6b38d4] bg-[#f5f0ff] ring-2 ring-[#6b38d4]/10'
-                : 'border-[#e5e2e1] bg-white hover:border-[#c4c7c7]'
+                ? 'border-[#111111] bg-[#f7f3f2]'
+                : 'border-[#e5e2e1] bg-white hover:border-[#111111]'
               }`}
           >
             <span
-              className={`w-9 h-9 rounded-md flex items-center justify-center flex-shrink-0
-                ${selected === id ? 'bg-[#6b38d4]' : 'bg-[#f1edec]'}`}
+              className={`w-10 h-10 flex items-center justify-center flex-shrink-0 border border-[#e5e2e1]
+                ${selected === id ? 'bg-[#111111] border-[#111111]' : 'bg-[#f1edec]'}`}
             >
-              <Icon size={18} className={selected === id ? 'text-white' : 'text-[#747878]'} />
+              <Icon size={20} className={selected === id ? 'text-white' : 'text-[#747878]'} />
             </span>
             <div>
               <p
-                className="text-sm font-semibold text-[#111111]"
+                className="text-base font-bold text-[#111111]"
                 style={{ fontFamily: "'Manrope', sans-serif" }}
               >
                 {label}
               </p>
-              <p className="text-xs text-[#747878]">{desc}</p>
+              <p className="text-sm text-[#747878]">{desc}</p>
             </div>
           </button>
         ))}
@@ -66,7 +70,7 @@ function Step1({ selected, onSelect, onNext }) {
       <button
         onClick={onNext}
         disabled={!selected}
-        className="w-full bg-[#111111] text-white py-2.5 rounded-md text-sm font-semibold hover:bg-[#333] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+        className="w-full bg-[#111111] text-white py-3 px-4 text-xs font-bold uppercase tracking-widest hover:bg-[#333] active:translate-y-0.5 border border-[#111111] transition-all disabled:opacity-50 disabled:cursor-not-allowed mt-2"
         style={{ fontFamily: "'Manrope', sans-serif" }}
       >
         Continue
@@ -79,14 +83,16 @@ function Field({ id, label, type = 'text', value, onChange, placeholder }) {
   const [showPw, setShowPw] = useState(false)
   const isPassword = type === 'password'
   return (
-    <div>
-      <label
-        htmlFor={id}
-        className="block text-xs font-bold text-[#444748] mb-1.5 uppercase tracking-wide"
-        style={{ fontFamily: "'Manrope', sans-serif" }}
-      >
-        {label}
-      </label>
+    <div className="flex flex-col gap-2">
+      <div className="flex justify-between items-center">
+        <label
+          htmlFor={id}
+          className="text-xs font-bold text-[#111111] uppercase tracking-widest"
+          style={{ fontFamily: "'Manrope', sans-serif" }}
+        >
+          {label}
+        </label>
+      </div>
       <div className="relative">
         <input
           id={id}
@@ -94,16 +100,17 @@ function Field({ id, label, type = 'text', value, onChange, placeholder }) {
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className="w-full px-3 py-2.5 border border-[#c4c7c7] rounded-md text-sm text-[#111111] placeholder-[#c4c7c7] focus:outline-none focus:border-[#6b38d4] focus:ring-2 focus:ring-[#6b38d4]/10 transition-all bg-white pr-10"
+          className="w-full bg-white border-0 border-b border-[#e5e2e1] py-2 px-0 focus:ring-0 focus:border-[#111111] text-base text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
+          style={{ fontFamily: "'Inter', sans-serif" }}
         />
         {isPassword && (
           <button
             type="button"
             onClick={() => setShowPw(!showPw)}
             tabIndex={-1}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[#747878] hover:text-[#111111]"
+            className="absolute right-0 top-1/2 -translate-y-1/2 text-[#747878] hover:text-[#111111] transition-colors"
           >
-            {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+            {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         )}
       </div>
@@ -154,25 +161,29 @@ function Step2({ role, onSubmit, onBack }) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2
-        className="text-2xl font-semibold text-[#111111] mb-1"
-        style={{ fontFamily: "'Newsreader', serif" }}
-      >
-        Create your account
-      </h2>
-      <p className="text-sm text-[#747878] mb-6 capitalize">Registering as a <strong>{role}</strong>.</p>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-8">
+      <header className="flex flex-col gap-2">
+        <h2
+          className="text-3xl font-bold text-[#111111]"
+          style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em' }}
+        >
+          Create account
+        </h2>
+        <p className="text-base text-[#444748] capitalize" style={{ fontFamily: "'Inter', sans-serif" }}>
+          Registering as a <strong>{role}</strong>.
+        </p>
+      </header>
 
       {error && (
-        <div className="flex items-center gap-2 bg-red-50 border border-red-100 text-red-700 rounded-md px-3 py-2 text-sm mb-4">
+        <div className="flex items-center gap-2 bg-[#ffdad6] border border-[#ba1a1a] text-[#93000a] p-3 text-sm rounded-none">
           <AlertCircle size={14} className="flex-shrink-0" />
           {error}
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="flex flex-col gap-6">
         <Field id="name" label="Full Name" value={form.name} onChange={set('name')} placeholder="Ahmed Hassan" />
-        <Field id="reg-email" label="Email" type="email" value={form.email} onChange={set('email')} placeholder="you@example.com" />
+        <Field id="reg-email" label="Email Address" type="email" value={form.email} onChange={set('email')} placeholder="you@example.com" />
         <Field id="reg-password" label="Password" type="password" value={form.password} onChange={set('password')} placeholder="Min. 6 characters" />
 
         {role === 'student' && (
@@ -193,11 +204,11 @@ function Step2({ role, onSubmit, onBack }) {
         )}
       </div>
 
-      <div className="mt-5 flex gap-3">
+      <div className="flex gap-4 pt-2">
         <button
           type="button"
           onClick={onBack}
-          className="flex-1 border border-[#c4c7c7] text-[#444748] py-2.5 rounded-md text-sm font-semibold hover:border-[#747878] hover:text-[#111111] transition-colors"
+          className="w-1/3 border border-[#e5e2e1] text-[#444748] py-3 px-4 text-xs font-bold uppercase tracking-widest hover:border-[#111111] hover:text-[#111111] transition-colors"
           style={{ fontFamily: "'Manrope', sans-serif" }}
         >
           Back
@@ -205,10 +216,10 @@ function Step2({ role, onSubmit, onBack }) {
         <button
           type="submit"
           disabled={loading}
-          className="flex-1 bg-[#111111] text-white py-2.5 rounded-md text-sm font-semibold hover:bg-[#333] disabled:opacity-50 transition-colors"
+          className="w-2/3 bg-[#111111] text-white py-3 px-4 text-xs font-bold uppercase tracking-widest hover:bg-[#333] active:translate-y-0.5 border border-[#111111] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ fontFamily: "'Manrope', sans-serif" }}
         >
-          {loading ? 'Creating…' : 'Create account'}
+          {loading ? 'Creating…' : 'Register'}
         </button>
       </div>
     </form>
@@ -230,42 +241,43 @@ export default function Register({ onRegister, currentUser }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf8f8] flex flex-col items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-7">
-          <Link to="/" className="inline-flex items-center gap-2">
-            <span className="w-7 h-7 rounded-sm bg-[#111111] flex items-center justify-center">
-              <span className="text-white text-sm font-bold" style={{ fontFamily: "'Newsreader', serif" }}>P</span>
-            </span>
-            <span className="text-xl font-semibold text-[#111111]" style={{ fontFamily: "'Newsreader', serif" }}>
-              Portfolia
-            </span>
-          </Link>
-          {/* Step indicator */}
-          <div className="flex items-center justify-center gap-2 mt-5">
-            {[1, 2].map((s) => (
-              <div
-                key={s}
-                className={`h-1.5 rounded-full transition-all duration-300
-                  ${step >= s ? 'bg-[#6b38d4] w-8' : 'bg-[#e5e2e1] w-4'}`}
-              />
-            ))}
-          </div>
+    <div className="min-h-screen bg-[#fdf8f8] flex flex-col items-center justify-center p-4 md:p-8">
+      {/* Header outside the box for consistency with the rest */}
+      <div className="w-full max-w-md mb-8 flex flex-col items-center">
+        <Link to="/" className="inline-flex items-center gap-2">
+          <span className="w-7 h-7 rounded-sm bg-[#111111] flex items-center justify-center">
+            <span className="text-white text-sm font-bold" style={{ fontFamily: "'Newsreader', serif" }}>P</span>
+          </span>
+          <span className="text-xl font-semibold text-[#111111]" style={{ fontFamily: "'Newsreader', serif" }}>
+            Portfolia
+          </span>
+        </Link>
+        {/* Step indicator */}
+        <div className="flex items-center justify-center gap-2 mt-5">
+          {[1, 2].map((s) => (
+            <div
+              key={s}
+              className={`h-1 rounded-none transition-all duration-300
+                ${step >= s ? 'bg-[#111111] w-8' : 'bg-[#e5e2e1] w-4'}`}
+            />
+          ))}
         </div>
-
-        <div className="bg-white border border-[#e5e2e1] rounded-lg p-6">
-          {step === 1
-            ? <Step1 selected={role} onSelect={setRole} onNext={() => setStep(2)} />
-            : <Step2 role={role} onSubmit={handleRegister} onBack={() => setStep(1)} />
-          }
-        </div>
-
-        <p className="text-center text-sm text-[#747878] mt-5">
-          Already have an account?{' '}
-          <Link to="/login" className="text-[#6b38d4] font-semibold hover:underline">Sign in</Link>
-        </p>
       </div>
+
+      {/* Register Container - Paper Style */}
+      <main className="w-full max-w-md bg-white border border-[#e5e2e1] p-8 md:p-12 relative flex flex-col gap-8 rounded-none">
+        {step === 1
+          ? <Step1 selected={role} onSelect={setRole} onNext={() => setStep(2)} />
+          : <Step2 role={role} onSubmit={handleRegister} onBack={() => setStep(1)} />
+        }
+      </main>
+      
+      <p className="text-center text-sm text-[#444748] mt-8" style={{ fontFamily: "'Inter', sans-serif" }}>
+        Already have an account?{' '}
+        <Link to="/login" className="text-[#111111] font-semibold underline decoration-1 underline-offset-4 hover:text-[#6b38d4] transition-colors" style={{ fontFamily: "'Manrope', sans-serif" }}>
+          Sign in
+        </Link>
+      </p>
     </div>
   )
 }

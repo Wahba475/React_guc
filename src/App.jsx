@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { users as initialUsers } from './data/users'
+import { projects as initialProjects } from './data/projects'
 
 import Landing from './pages/Landing'
 import Login from './pages/Login'
@@ -10,10 +11,39 @@ import Projects from './pages/Projects'
 import ProjectDetails from './pages/ProjectDetails'
 import Internships from './pages/Internships'
 import Profile from './pages/Profile'
+import Admin from './pages/Admin'
 
 export default function App() {
-  const [userList, setUserList] = useState(initialUsers)
-  const [currentUser, setCurrentUser] = useState(null)
+  const [userList, setUserList] = useState(() => {
+    const saved = localStorage.getItem('portfolia_users')
+    return saved ? JSON.parse(saved) : initialUsers
+  })
+  
+  const [currentUser, setCurrentUser] = useState(() => {
+    const saved = localStorage.getItem('portfolia_currentUser')
+    return saved ? JSON.parse(saved) : null
+  })
+
+  const [projectsList, setProjectsList] = useState(() => {
+    const saved = localStorage.getItem('portfolia_projects')
+    return saved ? JSON.parse(saved) : initialProjects
+  })
+
+  useEffect(() => {
+    localStorage.setItem('portfolia_users', JSON.stringify(userList))
+  }, [userList])
+
+  useEffect(() => {
+    localStorage.setItem('portfolia_projects', JSON.stringify(projectsList))
+  }, [projectsList])
+
+  useEffect(() => {
+    if (currentUser) {
+      localStorage.setItem('portfolia_currentUser', JSON.stringify(currentUser))
+    } else {
+      localStorage.removeItem('portfolia_currentUser')
+    }
+  }, [currentUser])
 
   function handleLogin(email, password) {
     const found = userList.find(
@@ -56,7 +86,7 @@ export default function App() {
           path="/dashboard"
           element={
             currentUser
-              ? <Dashboard currentUser={currentUser} onLogout={handleLogout} />
+              ? <Dashboard currentUser={currentUser} onLogout={handleLogout} projects={projectsList} />
               : <Navigate to="/login" replace />
           }
         />
@@ -64,7 +94,7 @@ export default function App() {
           path="/projects"
           element={
             currentUser
-              ? <Projects currentUser={currentUser} onLogout={handleLogout} />
+              ? <Projects currentUser={currentUser} onLogout={handleLogout} projects={projectsList} />
               : <Navigate to="/login" replace />
           }
         />
@@ -72,7 +102,7 @@ export default function App() {
           path="/projects/:id"
           element={
             currentUser
-              ? <ProjectDetails currentUser={currentUser} onLogout={handleLogout} />
+              ? <ProjectDetails currentUser={currentUser} onLogout={handleLogout} projects={projectsList} setProjectsList={setProjectsList} />
               : <Navigate to="/login" replace />
           }
         />
@@ -89,6 +119,14 @@ export default function App() {
           element={
             currentUser
               ? <Profile currentUser={currentUser} onLogout={handleLogout} onUpdateUser={handleUpdateUser} />
+              : <Navigate to="/login" replace />
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            currentUser
+              ? <Admin currentUser={currentUser} onLogout={handleLogout} />
               : <Navigate to="/login" replace />
           }
         />

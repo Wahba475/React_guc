@@ -1,144 +1,141 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import AppLayout from '../components/AppLayout'
-import Badge from '../components/Badge'
-import { projects } from '../data/projects'
-import { GitFork, ExternalLink, Search } from 'lucide-react'
+import { Search, Globe, Lock } from 'lucide-react'
 
-export default function Projects({ currentUser, onLogout }) {
+export default function Projects({ currentUser, onLogout, projects }) {
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState('All')
 
-  const statusFilters = ['All', 'In Progress', 'Completed']
+  const visibilityFilters = ['All', 'Public', 'Private']
 
   const filtered = projects.filter((p) => {
     const matchQuery =
       p.title.toLowerCase().includes(query.toLowerCase()) ||
       p.tags.some((t) => t.toLowerCase().includes(query.toLowerCase()))
-    const matchStatus = filter === 'All' || p.status === filter
-    return matchQuery && matchStatus
+    
+    // Using status as visibility for demonstration purposes, or map it.
+    const vis = p.visibility || (p.status === 'Completed' ? 'Public' : 'Private')
+    const matchVis = filter === 'All' || vis === filter
+
+    return matchQuery && matchVis
   })
 
   return (
     <AppLayout currentUser={currentUser} onLogout={onLogout}>
-      {/* Header */}
-      <div className="mb-8">
-        <p
-          className="text-xs font-bold uppercase tracking-widest text-[#747878] mb-1"
-          style={{ fontFamily: "'Manrope', sans-serif", letterSpacing: '0.1em' }}
-        >
-          Portfolio
-        </p>
-        <h1
-          className="text-2xl font-semibold text-[#111111]"
-          style={{ fontFamily: "'Newsreader', serif" }}
-        >
-          Projects
-        </h1>
-        <p className="text-sm text-[#747878] mt-1">Browse and explore documented project work.</p>
-      </div>
-
-      {/* Filters */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-6">
-        <div className="relative flex-1">
-          <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#c4c7c7]" />
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by title or tag…"
-            className="w-full pl-9 pr-3 py-2.5 border border-[#c4c7c7] rounded-md text-sm bg-white text-[#111111] placeholder-[#c4c7c7] focus:outline-none focus:border-[#6b38d4] focus:ring-2 focus:ring-[#6b38d4]/10 transition-all"
-          />
+      <div className="max-w-[1280px] mx-auto w-full">
+        {/* Page Header */}
+        <div className="mb-12">
+          <h2
+            className="text-4xl md:text-5xl font-bold text-[#111111] mb-4"
+            style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em', lineHeight: '1.15' }}
+          >
+            My Projects
+          </h2>
+          <p
+            className="text-lg text-[#747878] max-w-2xl leading-relaxed"
+            style={{ fontFamily: "'Manrope', sans-serif" }}
+          >
+            A collection of technical and academic works spanning multiple disciplines and technologies.
+          </p>
         </div>
-        <div className="flex gap-2">
-          {statusFilters.map((f) => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
-              className={`px-3 py-2 rounded-md text-xs font-semibold border transition-all
-                ${filter === f
-                  ? 'bg-[#111111] text-white border-[#111111]'
-                  : 'bg-white text-[#444748] border-[#c4c7c7] hover:border-[#747878]'
-                }`}
-              style={{ fontFamily: "'Manrope', sans-serif" }}
-            >
-              {f}
-            </button>
-          ))}
-        </div>
-      </div>
 
-      {/* Project grid */}
-      {filtered.length === 0 ? (
-        <div className="text-center py-16 text-[#c4c7c7] text-sm">No projects match your search.</div>
-      ) : (
-        <div className="grid sm:grid-cols-2 gap-4">
-          {filtered.map((p) => (
-            <div
-              key={p.id}
-              className="bg-white border border-[#e5e2e1] rounded-lg p-5 flex flex-col gap-3 hover:border-[#c4c7c7] hover:shadow-sm transition-all"
-            >
-              <div className="flex items-start justify-between gap-2">
+        {/* Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-4 border-b border-[#e5e2e1]">
+          <div className="flex gap-2">
+            {visibilityFilters.map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors border
+                  ${filter === f
+                    ? 'bg-[#111111] text-white border-[#111111] hover:bg-[#333]'
+                    : 'bg-white text-[#111111] border-[#c4c7c7] hover:bg-[#f1edec]'
+                  }`}
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 w-full md:w-auto">
+            <div className="relative w-full md:w-64">
+              <Search size={20} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#747878]" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Search projects..."
+                className="w-full pl-10 pr-4 py-2 border-b border-[#c4c7c7] bg-transparent focus:border-[#111111] focus:outline-none focus:ring-0 text-sm text-[#111111] placeholder:text-[#747878] transition-colors"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Project Grid */}
+        {filtered.length === 0 ? (
+          <div className="text-center py-16 text-[#747878] text-sm" style={{ fontFamily: "'Manrope', sans-serif" }}>
+            No projects match your search.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((p) => {
+              const isPublic = (p.visibility || (p.status === 'Completed' ? 'Public' : 'Private')) === 'Public'
+
+              return (
                 <Link
                   to={`/projects/${p.id}`}
-                  className="text-base font-semibold text-[#111111] hover:text-[#6b38d4] transition-colors leading-snug"
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
+                  key={p.id}
+                  className="bg-white border border-[#e5e2e1] p-6 flex flex-col gap-4 hover:border-[#111111] transition-colors duration-200 group"
                 >
-                  {p.title}
-                </Link>
-                <span
-                  className={`flex-shrink-0 text-xs font-semibold px-2 py-0.5 rounded
-                    ${p.status === 'Completed' ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-700'}`}
-                  style={{ fontFamily: "'Manrope', sans-serif" }}
-                >
-                  {p.status}
-                </span>
-              </div>
-
-              <p className="text-sm text-[#4B5563] leading-relaxed line-clamp-2">{p.description}</p>
-
-              <div className="flex flex-wrap gap-1.5">
-                {p.tags.map((tag) => (
-                  <Badge key={tag} variant="purple">{tag}</Badge>
-                ))}
-              </div>
-
-              <div className="flex items-center justify-between pt-1 mt-auto">
-                <span className="text-xs text-[#c4c7c7]">{p.updatedAt}</span>
-                <div className="flex items-center gap-3">
-                  {p.github && (
-                    <a
-                      href={p.github}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[#747878] hover:text-[#111111] transition-colors"
+                  <div className="flex justify-between items-start mb-1">
+                    <span
+                      className="text-xs font-semibold text-[#747878] uppercase tracking-wider"
+                      style={{ fontFamily: "'Inter', sans-serif" }}
                     >
-                      <GitFork size={15} />
-                    </a>
-                  )}
-                  {p.demo && (
-                    <a
-                      href={p.demo}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[#747878] hover:text-[#111111] transition-colors"
+                      {p.category || 'Project'}
+                    </span>
+                    <span
+                      className="text-[10px] font-semibold uppercase tracking-wider bg-[#f1edec] text-[#111111] px-2 py-1 flex items-center gap-1 border border-[#e5e2e1]"
+                      style={{ fontFamily: "'Inter', sans-serif" }}
                     >
-                      <ExternalLink size={15} />
-                    </a>
-                  )}
-                  <Link
-                    to={`/projects/${p.id}`}
-                    className="text-xs font-semibold text-[#6b38d4] hover:underline"
+                      {isPublic ? <Globe size={12} /> : <Lock size={12} />}
+                      {isPublic ? 'Public' : 'Private'}
+                    </span>
+                  </div>
+                  
+                  <h3
+                    className="text-2xl font-bold text-[#111111] group-hover:text-[#6b38d4] transition-colors leading-snug"
+                    style={{ fontFamily: "'Newsreader', serif" }}
+                  >
+                    {p.title}
+                  </h3>
+                  
+                  <p
+                    className="text-sm text-[#747878] flex-1 line-clamp-3 leading-relaxed"
                     style={{ fontFamily: "'Manrope', sans-serif" }}
                   >
-                    Details →
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+                    {p.description}
+                  </p>
+                  
+                  <div className="flex flex-wrap gap-2 mt-2 pt-4 border-t border-[#e5e2e1]">
+                    {p.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="text-[10px] font-semibold uppercase tracking-wider bg-[#ebe7e6] text-[#111111] px-2 py-1"
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </Link>
+              )
+            })}
+          </div>
+        )}
+      </div>
     </AppLayout>
   )
 }

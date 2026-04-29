@@ -34,61 +34,70 @@ export default function Login({ onLogin, currentUser }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf8f8] flex flex-col items-center justify-center px-4">
-      <div className="w-full max-w-sm">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 justify-center">
-            <span className="w-7 h-7 rounded-sm bg-[#111111] flex items-center justify-center">
-              <span className="text-white text-sm font-bold" style={{ fontFamily: "'Newsreader', serif" }}>P</span>
-            </span>
-            <span className="text-xl font-semibold text-[#111111]" style={{ fontFamily: "'Newsreader', serif" }}>
-              Portfolia
-            </span>
-          </Link>
+    <div className="min-h-screen bg-[#fdf8f8] flex flex-col items-center justify-center p-4 md:p-8">
+      {/* Login Container - Paper Style */}
+      <main className="w-full max-w-md bg-white border border-[#e5e2e1] p-8 md:p-12 relative flex flex-col gap-8 rounded-none">
+        {/* Header */}
+        <header className="flex flex-col gap-2 text-center">
           <h1
-            className="mt-6 text-2xl font-semibold text-[#111111]"
-            style={{ fontFamily: "'Newsreader', serif" }}
+            className="text-4xl font-bold text-[#111111]"
+            style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em', lineHeight: '1.1' }}
           >
             Welcome back
           </h1>
-          <p className="mt-1 text-sm text-[#747878]">Sign in to your account to continue.</p>
-        </div>
+          <p
+            className="text-base text-[#444748]"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
+            Log in to your Portfolia account.
+          </p>
+        </header>
 
-        <form onSubmit={handleSubmit} className="bg-white border border-[#e5e2e1] rounded-lg p-6 space-y-4">
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-8">
           {error && (
-            <div className="flex items-center gap-2 bg-red-50 border border-red-100 text-red-700 rounded-md px-3 py-2 text-sm">
+            <div className="flex items-center gap-2 bg-[#ffdad6] border border-[#ba1a1a] text-[#93000a] p-3 text-sm rounded-none">
               <AlertCircle size={14} className="flex-shrink-0" />
               {error}
             </div>
           )}
 
-          <div>
+          <div className="flex flex-col gap-2">
             <label
               htmlFor="email"
-              className="block text-xs font-bold text-[#444748] mb-1.5 uppercase tracking-wide"
+              className="text-xs font-bold text-[#111111] uppercase tracking-widest"
               style={{ fontFamily: "'Manrope', sans-serif" }}
             >
-              Email
+              Email Address
             </label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@example.com"
-              className="w-full px-3 py-2.5 border border-[#c4c7c7] rounded-md text-sm text-[#111111] placeholder-[#c4c7c7] focus:outline-none focus:border-[#6b38d4] focus:ring-2 focus:ring-[#6b38d4]/10 transition-all bg-white"
+              placeholder="name@example.com"
+              className="w-full bg-white border-0 border-b border-[#e5e2e1] py-2 px-0 focus:ring-0 focus:border-[#111111] text-base text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
+              style={{ fontFamily: "'Inter', sans-serif" }}
             />
           </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-xs font-bold text-[#444748] mb-1.5 uppercase tracking-wide"
-              style={{ fontFamily: "'Manrope', sans-serif" }}
-            >
-              Password
-            </label>
+          <div className="flex flex-col gap-2">
+            <div className="flex justify-between items-center">
+              <label
+                htmlFor="password"
+                className="text-xs font-bold text-[#111111] uppercase tracking-widest"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                Password
+              </label>
+              <button
+                type="button"
+                className="text-sm text-[#444748] hover:text-[#111111] transition-colors"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                Forgot password?
+              </button>
+            </div>
             <div className="relative">
               <input
                 id="password"
@@ -96,41 +105,51 @@ export default function Login({ onLogin, currentUser }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full px-3 py-2.5 pr-10 border border-[#c4c7c7] rounded-md text-sm text-[#111111] placeholder-[#c4c7c7] focus:outline-none focus:border-[#6b38d4] focus:ring-2 focus:ring-[#6b38d4]/10 transition-all bg-white"
+                className="w-full bg-white border-0 border-b border-[#e5e2e1] py-2 px-0 pr-10 focus:ring-0 focus:border-[#111111] text-base text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
+                style={{ fontFamily: "'Inter', sans-serif" }}
               />
               <button
                 type="button"
                 onClick={() => setShowPw(!showPw)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#747878] hover:text-[#111111] transition-colors"
+                className="absolute right-0 top-1/2 -translate-y-1/2 text-[#747878] hover:text-[#111111] transition-colors"
                 tabIndex={-1}
               >
-                {showPw ? <EyeOff size={15} /> : <Eye size={15} />}
+                {showPw ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#111111] text-white py-2.5 rounded-md text-sm font-semibold hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition-colors mt-2"
-            style={{ fontFamily: "'Manrope', sans-serif" }}
-          >
-            {loading ? 'Signing in…' : 'Sign in'}
-          </button>
+          {/* Actions */}
+          <div className="flex flex-col gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#111111] text-white py-3 px-4 text-xs font-bold uppercase tracking-widest hover:bg-[#333] active:translate-y-0.5 border border-[#111111] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ fontFamily: "'Manrope', sans-serif" }}
+            >
+              {loading ? 'Logging in...' : 'Login'}
+            </button>
+            <p
+              className="text-center text-sm text-[#444748]"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              Don't have an account?{' '}
+              <Link
+                to="/register"
+                className="text-[#111111] font-semibold underline decoration-1 underline-offset-4 hover:text-[#6b38d4] transition-colors"
+                style={{ fontFamily: "'Manrope', sans-serif" }}
+              >
+                Register
+              </Link>
+            </p>
+          </div>
         </form>
 
-        <p className="text-center text-sm text-[#747878] mt-5">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-[#6b38d4] font-semibold hover:underline">
-            Create one
-          </Link>
-        </p>
-
         {/* Demo hint */}
-        <p className="text-center text-xs text-[#c4c7c7] mt-3">
+        <p className="text-center text-xs text-[#c4c7c7] absolute bottom-4 left-0 right-0">
           Demo: ahmed@test.com / password
         </p>
-      </div>
+      </main>
     </div>
   )
 }
