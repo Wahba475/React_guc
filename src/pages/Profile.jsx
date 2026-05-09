@@ -201,6 +201,7 @@ export default function Profile({
     { id: 'info', label: 'Information' },
     { id: 'notifications', label: `Notifications${unreadCount > 0 ? ` (${unreadCount})` : ''}` },
     ...(currentUser.role === 'student' ? [{ id: 'internships', label: 'Completed Internships' }] : []),
+    ...(currentUser.role === 'instructor' ? [{ id: 'courses', label: 'My Courses' }] : []),
   ]
 
   return (
@@ -483,6 +484,53 @@ export default function Profile({
                 )}
               </div>
             )}
+
+            {/* ── My Courses Section (Req 7) ── */}
+            {activeSection === 'courses' && currentUser.role === 'instructor' && (
+              <div className="bg-white border border-[#e5e2e1]">
+                <div className="px-6 py-4 border-b border-[#e5e2e1]">
+                  <h2 className="text-xs font-bold uppercase tracking-wider text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                    My Courses
+                  </h2>
+                </div>
+                <div className="p-6">
+                  {courses.length === 0 ? (
+                    <p className="text-sm text-[#747878]" style={{ fontFamily: "'Manrope', sans-serif" }}>No courses available in the system.</p>
+                  ) : (
+                    <div className="space-y-4">
+                      {courses.map(course => {
+                        const isLinked = (currentUser.courses || []).includes(course.id)
+                        return (
+                          <div key={course.id} className="flex items-center justify-between border border-[#e5e2e1] p-4 bg-[#fdf8f8]">
+                            <div>
+                              <p className="text-sm font-bold text-[#111111]">{course.code} - {course.name}</p>
+                              <p className="text-xs text-[#747878] mt-1">{isLinked ? 'Currently Linked' : 'Not Linked'}</p>
+                            </div>
+                            <button
+                              onClick={() => {
+                                onRequestCourseLink({
+                                  id: String(Date.now()),
+                                  instructorId: currentUser.id,
+                                  courseId: course.id,
+                                  type: isLinked ? 'unlink' : 'link',
+                                  createdAt: new Date().toISOString()
+                                })
+                                toast.success(`Request to ${isLinked ? 'unlink' : 'link'} sent to Admin.`)
+                              }}
+                              className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${isLinked ? 'border border-[#ba1a1a] text-[#ba1a1a] hover:bg-[#ba1a1a] hover:text-white' : 'bg-[#111111] text-white hover:bg-[#333]'}`}
+                              style={{ fontFamily: "'Inter', sans-serif" }}
+                            >
+                              {isLinked ? 'Request Unlink' : 'Request Link'}
+                            </button>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       </div>

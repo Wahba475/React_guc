@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { GraduationCap, Building2, BookOpen, AlertCircle, Eye, EyeOff } from 'lucide-react'
+import { GraduationCap, Building2, BookOpen, AlertCircle, Eye, EyeOff, ArrowLeft, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { getRoleDashboardPath } from '../utils/roleRoutes'
 
@@ -247,9 +247,18 @@ export default function Register({ onRegister, currentUser }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf8f8] flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen bg-[#fdf8f8] flex flex-col items-center justify-center p-4 md:p-8 relative">
+      {/* Back to home */}
+      <Link
+        to="/"
+        className="absolute top-6 left-6 md:top-8 md:left-8 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#747878] hover:text-[#111111] transition-colors bg-white px-3 py-2 border border-[#e5e2e1] hover:bg-[#f1edec]"
+        style={{ fontFamily: "'Inter', sans-serif" }}
+      >
+        <ArrowLeft size={12} /> Back to Home
+      </Link>
+
       {/* Header outside the box for consistency with the rest */}
-      <div className="w-full max-w-md mb-8 flex flex-col items-center">
+      <div className="w-full max-w-md mb-8 flex flex-col items-center mt-12 md:mt-0">
         <Link to="/" className="inline-flex items-center gap-2">
           <span className="w-7 h-7 rounded-sm bg-[#111111] flex items-center justify-center">
             <span className="text-white text-sm font-bold" style={{ fontFamily: "'Newsreader', serif" }}>P</span>
@@ -280,8 +289,8 @@ export default function Register({ onRegister, currentUser }) {
       
       <p className="text-center text-sm text-[#444748] mt-8" style={{ fontFamily: "'Inter', sans-serif" }}>
         Already have an account?{' '}
-        <Link to="/login" className="text-[#111111] font-semibold underline decoration-1 underline-offset-4 hover:text-[#6b38d4] transition-colors" style={{ fontFamily: "'Manrope', sans-serif" }}>
-          Sign in
+        <Link to="/login" className="text-[#111111] font-semibold underline decoration-1 underline-offset-4 hover:text-[#6b38d4] transition-colors inline-flex items-center gap-1" style={{ fontFamily: "'Manrope', sans-serif" }}>
+          Sign in <ArrowRight size={14} />
         </Link>
       </p>
     </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, AlertCircle } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, ArrowLeft, ArrowRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { getRoleDashboardPath } from '../utils/roleRoutes'
 
@@ -38,9 +38,18 @@ export default function Login({ onLogin, currentUser }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf8f8] flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen bg-[#fdf8f8] flex flex-col items-center justify-center p-4 md:p-8 relative">
+      {/* Back to home */}
+      <Link
+        to="/"
+        className="absolute top-6 left-6 md:top-8 md:left-8 inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#747878] hover:text-[#111111] transition-colors bg-white px-3 py-2 border border-[#e5e2e1] hover:bg-[#f1edec]"
+        style={{ fontFamily: "'Inter', sans-serif" }}
+      >
+        <ArrowLeft size={12} /> Back to Home
+      </Link>
+
       {/* Login Container - Paper Style */}
-      <main className="w-full max-w-md bg-white border border-[#e5e2e1] p-8 md:p-12 relative flex flex-col gap-8 rounded-none">
+      <main className="w-full max-w-md bg-white border border-[#e5e2e1] p-8 md:p-12 relative flex flex-col gap-8 rounded-none mt-12 md:mt-0">
         {/* Header */}
         <header className="flex flex-col gap-2 text-center">
           <h1
@@ -140,10 +149,10 @@ export default function Login({ onLogin, currentUser }) {
               Don't have an account?{' '}
               <Link
                 to="/register"
-                className="text-[#111111] font-semibold underline decoration-1 underline-offset-4 hover:text-[#6b38d4] transition-colors"
+                className="text-[#111111] font-semibold underline decoration-1 underline-offset-4 hover:text-[#6b38d4] transition-colors inline-flex items-center gap-1"
                 style={{ fontFamily: "'Manrope', sans-serif" }}
               >
-                Register
+                Register <ArrowRight size={14} />
               </Link>
             </p>
           </div>

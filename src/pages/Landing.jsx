@@ -9,7 +9,7 @@ export default function Landing({ currentUser }) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (currentUser) navigate('/dashboard')
+    if (currentUser && currentUser.role !== 'admin') navigate('/dashboard')
   }, [currentUser, navigate])
 
   return (

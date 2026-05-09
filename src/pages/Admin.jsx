@@ -1,8 +1,8 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, Link, useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import AdminLayout from '../components/AdminLayout'
-import { Filter, Edit2, Plus, Trash2, X, Check, Users, FolderKanban, Briefcase, Shield } from 'lucide-react'
+import { Filter, Edit2, Plus, Trash2, X, Check, Users, FolderKanban, Briefcase, Shield, ArrowLeft } from 'lucide-react'
 
 /* ── Stat Card ─────────────────────────────────────────── */
 function AdminStat({ icon: Icon, label, value, color = '#111111' }) {
@@ -154,11 +154,47 @@ export default function Admin({
   onUpdateUser,
   onDeleteProject,
   onDeleteInternship,
+  courses,
+  onCreateCourse,
+  onUpdateCourse,
+  onDeleteCourse,
+  linkingRequests,
+  onResolveLinkRequest
 }) {
   const navigate = useNavigate()
-  const [activeTab, setActiveTab] = useState('Users')
+  const location = useLocation()
+  
+  const path = location.pathname
+  const [activeTab, setActiveTab] = useState(() => {
+    if (path.includes('/courses')) return 'Courses'
+    if (path.includes('/projects-moderation')) return 'Projects'
+    if (path.includes('/employers-approval')) return 'Requests'
+    if (path.includes('/users')) return 'Users'
+    return 'Users' // Default
+  })
+
+  // Sync state if pathname changes
+  useEffect(() => {
+    if (path.includes('/courses')) setActiveTab('Courses')
+    else if (path.includes('/projects-moderation')) setActiveTab('Projects')
+    else if (path.includes('/employers-approval')) setActiveTab('Requests')
+    else if (path.includes('/users')) setActiveTab('Users')
+    else if (path.includes('/dashboard')) setActiveTab('Users') // Default for dashboard
+  }, [path])
+
+  function handleTabClick(tab) {
+    setActiveTab(tab)
+    if (tab === 'Users') navigate('/admin/users')
+    else if (tab === 'Projects') navigate('/admin/projects-moderation')
+    else if (tab === 'Requests') navigate('/admin/employers-approval')
+    else if (tab === 'Courses') navigate('/admin/courses')
+    else if (tab === 'Internships') navigate('/admin/dashboard') // Fallback since no specific route
+  }
+
   const [roleFilter, setRoleFilter] = useState('All')
   const [editingUser, setEditingUser] = useState(null)
+  const [editingCourse, setEditingCourse] = useState(null)
+  const [isCreatingCourse, setIsCreatingCourse] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(null) // { type, id, label }
 
   // ── Computed ──────────────────────────────────────────
@@ -208,6 +244,25 @@ export default function Admin({
     })
   }
 
+  function handleSaveCourse(updated) {
+    if (isCreatingCourse) {
+      onCreateCourse({ ...updated, id: String(Date.now()), createdAt: new Date().toISOString() })
+    } else {
+      onUpdateCourse(updated)
+    }
+    setEditingCourse(null)
+    setIsCreatingCourse(false)
+    toast.success('Course saved.')
+  }
+
+  function handleDeleteCourseItem(course) {
+    setConfirmDelete({
+      type: 'course',
+      id: course.id,
+      label: `Are you sure you want to delete course "${course.name}"?`,
+    })
+  }
+
   function executeDelete() {
     if (!confirmDelete) return
     const { type, id } = confirmDelete
@@ -220,6 +275,9 @@ export default function Admin({
     } else if (type === 'internship') {
       onDeleteInternship(id)
       toast.success('Internship deleted.')
+    } else if (type === 'course') {
+      onDeleteCourse(id)
+      toast.success('Course deleted.')
     }
     setConfirmDelete(null)
   }
@@ -241,6 +299,14 @@ export default function Admin({
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Link
+              to="/"
+              className="inline-flex items-center gap-1.5 bg-white text-[#111111] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border border-[#e5e2e1] hover:bg-[#f1edec] transition-colors"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              <ArrowLeft size={12} />
+              Back to Home
+            </Link>
             <span
               className="inline-flex items-center gap-1.5 bg-[#f1edec] text-[#111111] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border border-[#e5e2e1]"
               style={{ fontFamily: "'Inter', sans-serif" }}
@@ -261,11 +327,11 @@ export default function Admin({
         {/* Data Controls */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 border border-[#e5e2e1]">
           {/* Tabs */}
-          <div className="flex gap-2">
-            {['Users', 'Projects', 'Internships'].map((tab) => (
+          <div className="flex gap-2 flex-wrap">
+            {['Users', 'Projects', 'Internships', 'Courses', 'Requests'].map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => handleTabClick(tab)}
                 className={`px-4 py-2 text-xs font-semibold uppercase tracking-wider transition-colors border
                   ${
                     activeTab === tab
@@ -485,6 +551,134 @@ export default function Admin({
             </div>
           </div>
         )}
+
+        {/* ── Courses Table ── */}
+        {activeTab === 'Courses' && (
+          <div className="bg-white border border-[#e5e2e1] overflow-x-auto">
+            <div className="p-4 flex justify-end">
+              <button
+                onClick={() => {
+                  setEditingCourse(null)
+                  setIsCreatingCourse(true)
+                }}
+                className="flex items-center gap-1.5 bg-[#111111] text-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-[#333] transition-colors"
+                style={{ fontFamily: "'Inter', sans-serif" }}
+              >
+                <Plus size={14} /> Add Course
+              </button>
+            </div>
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#f7f3f2] border-y border-[#e5e2e1]">
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Code</th>
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Name</th>
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider text-right" style={{ fontFamily: "'Inter', sans-serif" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm text-[#111111]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                {(courses || []).length === 0 ? (
+                  <tr>
+                    <td colSpan={3} className="py-10 text-center text-[#747878] text-sm">No courses yet.</td>
+                  </tr>
+                ) : (
+                  (courses || []).map((c, idx) => (
+                    <tr
+                      key={c.id}
+                      className={`hover:bg-[#f7f3f2] transition-colors group ${idx !== (courses || []).length - 1 ? 'border-b border-[#e5e2e1]' : ''}`}
+                    >
+                      <td className="py-3 px-4 font-semibold text-[#111111]">{c.code}</td>
+                      <td className="py-3 px-4 text-[#747878]">{c.name}</td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => {
+                              setEditingCourse(c)
+                              setIsCreatingCourse(false)
+                            }}
+                            className="p-1.5 text-[#747878] hover:text-[#111111] transition-colors focus:outline-none focus:ring-1 focus:ring-[#111111]"
+                            title="Edit course"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteCourseItem(c)}
+                            className="p-1.5 text-[#747878] hover:text-[#ba1a1a] transition-colors focus:outline-none focus:ring-1 focus:ring-[#ba1a1a]"
+                            title="Delete course"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* ── Linking Requests ── */}
+        {activeTab === 'Requests' && (
+          <div className="bg-white border border-[#e5e2e1] overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#f7f3f2] border-b border-[#e5e2e1]">
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Instructor</th>
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Course</th>
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Type</th>
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider text-right" style={{ fontFamily: "'Inter', sans-serif" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm text-[#111111]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                {(linkingRequests || []).length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-10 text-center text-[#747878] text-sm">No pending requests.</td>
+                  </tr>
+                ) : (
+                  (linkingRequests || []).map((req, idx) => {
+                    const inst = (userList || []).find(u => u.id === req.instructorId)
+                    const crs = (courses || []).find(c => c.id === req.courseId)
+                    return (
+                      <tr
+                        key={req.id}
+                        className={`hover:bg-[#f7f3f2] transition-colors group ${idx !== (linkingRequests || []).length - 1 ? 'border-b border-[#e5e2e1]' : ''}`}
+                      >
+                        <td className="py-3 px-4 font-semibold text-[#111111]">{inst?.name || 'Unknown User'}</td>
+                        <td className="py-3 px-4 text-[#747878]">{crs ? `${crs.code} - ${crs.name}` : 'Unknown Course'}</td>
+                        <td className="py-3 px-4">
+                          <span
+                            className={`inline-flex items-center px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${req.type === 'link' ? 'bg-[#1d4ed8] text-white' : 'bg-[#ba1a1a] text-white'}`}
+                            style={{ fontFamily: "'Inter', sans-serif" }}
+                          >
+                            {req.type}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => onResolveLinkRequest(req.id, 'accept')}
+                              className="p-1.5 text-[#111111] bg-[#f1edec] hover:bg-[#111111] hover:text-white transition-colors"
+                              title="Accept"
+                            >
+                              <Check size={14} />
+                            </button>
+                            <button
+                              onClick={() => onResolveLinkRequest(req.id, 'reject')}
+                              className="p-1.5 text-[#111111] bg-[#f1edec] hover:bg-[#ba1a1a] hover:text-white transition-colors"
+                              title="Reject"
+                            >
+                              <X size={14} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
@@ -493,6 +687,16 @@ export default function Admin({
           user={editingUser}
           onSave={handleSaveUser}
           onClose={() => setEditingUser(null)}
+        />
+      )}
+      {(editingCourse || isCreatingCourse) && (
+        <EditCourseModal
+          course={editingCourse}
+          onSave={handleSaveCourse}
+          onClose={() => {
+            setEditingCourse(null)
+            setIsCreatingCourse(false)
+          }}
         />
       )}
       {confirmDelete && (
