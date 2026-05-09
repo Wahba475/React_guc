@@ -13,6 +13,7 @@ export default function AdminSidebar({ currentUser, onLogout, onClose, notificat
     { to: '/admin/dashboard',         label: 'Dashboard',            icon: LayoutDashboard },
     { to: '/admin/users',             label: 'Users',                icon: Users },
     { to: '/admin/employers-approval', label: 'Employers Approval',  icon: Building2 },
+    { to: '/admin/course-requests',   label: 'Course Requests',      icon: BookOpen },
     { to: '/admin/courses',           label: 'Courses',              icon: BookOpen },
     { to: '/admin/projects-moderation', label: 'Projects Moderation', icon: FolderKanban },
     { to: '/admin/notifications',     label: 'Notifications',        icon: Bell },

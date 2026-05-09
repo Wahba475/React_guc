@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Start-Sleep -Seconds 5)",
+      "Bash(Get-Content \"C:\\\\Users\\\\L\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\C--Users-L-OneDrive-React-guc\\\\b5d65830-1396-4215-b695-9cd3abfd2eab\\\\tasks\\\\bsf507m2m.output\" -Tail 20)",
+      "Bash(curl -s http://localhost:5175/)"
+    ]
+  }
+}

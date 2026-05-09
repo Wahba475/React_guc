@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard, Briefcase, User, LogOut, X,
-  Bell, BellOff, Users, MessageSquare
+  Bell, BellOff, Users, MessageSquare, BookOpen
 } from 'lucide-react'
 import { getRoleDashboardPath } from '../utils/roleRoutes'
 
@@ -11,6 +11,7 @@ export default function InstructorSidebar({ currentUser, onLogout, onClose, noti
 
   const navItems = [
     { to: '/instructor/dashboard',   label: 'Dashboard',   icon: LayoutDashboard },
+    { to: '/instructor/courses',     label: 'Courses',     icon: BookOpen },
     { to: '/instructor/portfolios',  label: 'Students / Portfolios',    icon: Users },
     { to: '/instructor/internships', label: 'Internships', icon: Briefcase },
     { to: '/instructor/messages',    label: 'Messages',    icon: MessageSquare },

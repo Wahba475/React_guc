@@ -12,16 +12,20 @@ export default function Portfolios({ currentUser, onLogout, notifications, onMar
   const [skillFilter, setSkillFilter] = useState('')
   const [sortBy, setSortBy] = useState('name') // 'name' | 'projects'
 
-  const students = (userList || []).filter((u) => u.role === 'student' && u.active !== false)
+  const [roleView, setRoleView] = useState('students') // 'students' | 'instructors'
 
-  // Collect unique majors and skills
-  const allMajors = [...new Set(students.map((s) => s.major).filter(Boolean))].sort()
-  const allSkills = [...new Set(students.flatMap((s) => s.skills || []))].sort()
+  const students = (userList || []).filter((u) => u.role === 'student' && u.active !== false)
+  const instructors = (userList || []).filter((u) => u.role === 'instructor' && u.active !== false)
+  const pool = roleView === 'instructors' ? instructors : students
+
+  // Collect unique majors and skills from current pool
+  const allMajors = [...new Set(pool.map((s) => s.major).filter(Boolean))].sort()
+  const allSkills = [...new Set(pool.flatMap((s) => s.skills || []))].sort()
 
   const myFavorites = currentUser?.favorites?.portfolios || []
 
   const filtered = useMemo(() => {
-    return students
+    return pool
       .filter((s) => {
         const q = query.toLowerCase()
         if (q && !s.name.toLowerCase().includes(q) && !s.email.toLowerCase().includes(q)) return false
@@ -37,7 +41,7 @@ export default function Portfolios({ currentUser, onLogout, notifications, onMar
         }
         return a.name.localeCompare(b.name)
       })
-  }, [students, query, majorFilter, skillFilter, sortBy, projects])
+  }, [pool, query, majorFilter, skillFilter, sortBy, projects])
 
   function getPublicProjects(userId) {
     return (projects || []).filter((p) => String(p.ownerId) === String(userId) && p.visibility === 'Public')
@@ -52,11 +56,22 @@ export default function Portfolios({ currentUser, onLogout, notifications, onMar
             Discover
           </p>
           <h1 className="text-4xl font-bold text-[#111111] mb-2" style={{ fontFamily: "'Newsreader', serif", letterSpacing: '-0.02em' }}>
-            Student Portfolios
+            Portfolios
           </h1>
           <p className="text-lg text-[#747878]" style={{ fontFamily: "'Manrope', sans-serif" }}>
             {filtered.length} portfolio{filtered.length !== 1 ? 's' : ''} found.
           </p>
+        </div>
+
+        {/* Req 8/9: Toggle students vs instructors */}
+        <div className="flex gap-2 mb-6">
+          {[['students', `Students (${students.length})`], ['instructors', `Instructors (${instructors.length})`]].map(([val, label]) => (
+            <button key={val} onClick={() => { setRoleView(val); setMajorFilter(''); setSkillFilter('') }}
+              className={`px-4 py-2 text-xs font-bold uppercase tracking-wider border transition-colors ${roleView === val ? 'bg-[#111111] text-white border-[#111111]' : 'bg-white text-[#747878] border-[#e5e2e1] hover:border-[#111111] hover:text-[#111111]'}`}
+              style={{ fontFamily: "'Inter', sans-serif" }}>
+              {label}
+            </button>
+          ))}
         </div>
 
         {/* Controls */}
@@ -133,7 +148,7 @@ export default function Portfolios({ currentUser, onLogout, notifications, onMar
                           {student.name}
                         </p>
                         <p className="text-xs text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>
-                          {student.major || 'Student'}
+                          {student.major || (student.role === 'instructor' ? 'Instructor' : 'Student')}
                         </p>
                       </div>
                     </div>

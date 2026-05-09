@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import AdminLayout from '../components/AdminLayout'
-import { Filter, Edit2, Plus, Trash2, X, Check, Users, FolderKanban, Briefcase, Shield, ArrowLeft } from 'lucide-react'
+import { Filter, Edit2, Plus, Trash2, X, Check, Users, FolderKanban, Briefcase, Shield, ArrowLeft, BookOpen, ToggleLeft, ToggleRight, EyeOff, Eye } from 'lucide-react'
 
 /* ── Stat Card ─────────────────────────────────────────── */
 function AdminStat({ icon: Icon, label, value, color = '#111111' }) {
@@ -116,6 +116,79 @@ function EditUserModal({ user, onSave, onClose }) {
   )
 }
 
+/* ── Edit Course Modal ─────────────────────────────────── */
+function EditCourseModal({ course, onSave, onClose }) {
+  const [form, setForm] = useState({
+    name: course?.name || '',
+    code: course?.code || '',
+  })
+
+  function handleSave(e) {
+    e.preventDefault()
+    if (!form.name.trim() || !form.code.trim()) {
+      toast.error('Course name and code are required.')
+      return
+    }
+    onSave({ ...(course || {}), ...form })
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md border border-[#e5e2e1]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e2e1]">
+          <h3 className="text-xl font-bold text-[#111111]" style={{ fontFamily: "'Newsreader', serif" }}>
+            {course ? 'Edit Course' : 'New Course'}
+          </h3>
+          <button onClick={onClose} className="text-[#747878] hover:text-[#111111] transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+        <form onSubmit={handleSave} className="px-6 py-5 space-y-4">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest text-[#111111] mb-1.5" style={{ fontFamily: "'Inter', sans-serif" }}>Course Name</label>
+            <input
+              type="text"
+              value={form.name}
+              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              className="w-full border-b border-[#c4c7c7] py-1.5 bg-transparent text-sm text-[#111111] focus:border-[#111111] focus:outline-none"
+              style={{ fontFamily: "'Manrope', sans-serif" }}
+              placeholder="Bachelor Project"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest text-[#111111] mb-1.5" style={{ fontFamily: "'Inter', sans-serif" }}>Course Code</label>
+            <input
+              type="text"
+              value={form.code}
+              onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))}
+              className="w-full border-b border-[#c4c7c7] py-1.5 bg-transparent text-sm text-[#111111] focus:border-[#111111] focus:outline-none"
+              style={{ fontFamily: "'Manrope', sans-serif" }}
+              placeholder="CSEN901"
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button
+              type="submit"
+              className="flex-1 bg-[#111111] text-white py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-[#333] transition-colors"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              Save Course
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2.5 border border-[#c4c7c7] text-xs font-bold uppercase tracking-widest text-[#111111] hover:bg-[#f1edec] transition-colors"
+              style={{ fontFamily: "'Inter', sans-serif" }}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 /* ── Confirm Delete Modal ──────────────────────────────── */
 function ConfirmModal({ message, onConfirm, onClose }) {
   return (
@@ -143,6 +216,56 @@ function ConfirmModal({ message, onConfirm, onClose }) {
   )
 }
 
+/* ── Create User Modal (admin) ─────────────────────────── */
+function CreateUserModal({ onSave, onClose }) {
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'admin', bio: '' })
+
+  function handleSave(e) {
+    e.preventDefault()
+    if (!form.name.trim() || !form.email.trim() || !form.password.trim()) {
+      toast.error('Name, email and password are required.')
+      return
+    }
+    onSave(form)
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+      <div className="bg-white w-full max-w-md border border-[#e5e2e1]">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#e5e2e1]">
+          <h3 className="text-xl font-bold text-[#111111]" style={{ fontFamily: "'Newsreader', serif" }}>Create Account</h3>
+          <button onClick={onClose} className="text-[#747878] hover:text-[#111111] transition-colors"><X size={20} /></button>
+        </div>
+        <form onSubmit={handleSave} className="px-6 py-5 space-y-4">
+          {[{ label: 'Name', key: 'name' }, { label: 'Email', key: 'email', type: 'email' }, { label: 'Password', key: 'password', type: 'password' }].map(({ label, key, type }) => (
+            <div key={key}>
+              <label className="block text-xs font-bold uppercase tracking-widest text-[#111111] mb-1.5" style={{ fontFamily: "'Inter', sans-serif" }}>{label}</label>
+              <input type={type || 'text'} value={form[key]} onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
+                className="w-full border-b border-[#c4c7c7] py-1.5 bg-transparent text-sm text-[#111111] focus:border-[#111111] focus:outline-none"
+                style={{ fontFamily: "'Manrope', sans-serif" }} />
+            </div>
+          ))}
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-widest text-[#111111] mb-1.5" style={{ fontFamily: "'Inter', sans-serif" }}>Role</label>
+            <select value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}
+              className="w-full border border-[#c4c7c7] py-1.5 px-2 bg-white text-sm text-[#111111] focus:border-[#111111] focus:outline-none"
+              style={{ fontFamily: "'Manrope', sans-serif" }}>
+              <option value="admin">Admin</option>
+              <option value="student">Student</option>
+              <option value="instructor">Instructor</option>
+              <option value="employer">Employer</option>
+            </select>
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button type="submit" className="flex-1 bg-[#111111] text-white py-2.5 text-xs font-bold uppercase tracking-widest hover:bg-[#333] transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>Create Account</button>
+            <button type="button" onClick={onClose} className="px-5 py-2.5 border border-[#c4c7c7] text-xs font-bold uppercase tracking-widest text-[#111111] hover:bg-[#f1edec] transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
 /* ── Page ───────────────────────────────────────────────── */
 export default function Admin({
   currentUser,
@@ -159,34 +282,38 @@ export default function Admin({
   onUpdateCourse,
   onDeleteCourse,
   linkingRequests,
-  onResolveLinkRequest
+  onResolveLinkRequest,
+  onUpdateProject,
+  onCreateAdminUser,
 }) {
   const navigate = useNavigate()
   const location = useLocation()
   
   const path = location.pathname
   const [activeTab, setActiveTab] = useState(() => {
+    if (path.includes('/course-requests')) return 'Requests'
     if (path.includes('/courses')) return 'Courses'
     if (path.includes('/projects-moderation')) return 'Projects'
-    if (path.includes('/employers-approval')) return 'Requests'
+    if (path.includes('/employers-approval')) return 'Employers'
     if (path.includes('/users')) return 'Users'
-    return 'Users' // Default
+    return 'Users'
   })
 
   // Sync state if pathname changes
   useEffect(() => {
-    if (path.includes('/courses')) setActiveTab('Courses')
+    if (path.includes('/courses') && !path.includes('/course-requests')) setActiveTab('Courses')
     else if (path.includes('/projects-moderation')) setActiveTab('Projects')
-    else if (path.includes('/employers-approval')) setActiveTab('Requests')
+    else if (path.includes('/course-requests')) setActiveTab('Requests')
+    else if (path.includes('/employers-approval')) setActiveTab('Employers')
     else if (path.includes('/users')) setActiveTab('Users')
-    else if (path.includes('/dashboard')) setActiveTab('Users') // Default for dashboard
+    else if (path.includes('/dashboard')) setActiveTab('Users')
   }, [path])
 
   function handleTabClick(tab) {
     setActiveTab(tab)
     if (tab === 'Users') navigate('/admin/users')
     else if (tab === 'Projects') navigate('/admin/projects-moderation')
-    else if (tab === 'Requests') navigate('/admin/employers-approval')
+    else if (tab === 'Requests') navigate('/admin/course-requests')
     else if (tab === 'Courses') navigate('/admin/courses')
     else if (tab === 'Internships') navigate('/admin/dashboard') // Fallback since no specific route
   }
@@ -195,6 +322,7 @@ export default function Admin({
   const [editingUser, setEditingUser] = useState(null)
   const [editingCourse, setEditingCourse] = useState(null)
   const [isCreatingCourse, setIsCreatingCourse] = useState(false)
+  const [isCreatingUser, setIsCreatingUser] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(null) // { type, id, label }
 
   // ── Computed ──────────────────────────────────────────
@@ -263,6 +391,24 @@ export default function Admin({
     })
   }
 
+  function handleCreateUser(userData) {
+    onCreateAdminUser(userData)
+    setIsCreatingUser(false)
+    toast.success(`Account created for ${userData.name}.`)
+  }
+
+  function handleToggleUserActive(user) {
+    const updated = { ...user, active: user.active === false ? true : false }
+    onUpdateUser(updated)
+    toast.success(`${user.name} ${updated.active === false ? 'deactivated' : 'activated'}.`)
+  }
+
+  function handleToggleProjectVisibility(project) {
+    const updated = { ...project, adminHidden: !project.adminHidden }
+    onUpdateProject(updated)
+    toast.success(`Project "${project.title}" ${updated.adminHidden ? 'hidden' : 'made visible'}.`)
+  }
+
   function executeDelete() {
     if (!confirmDelete) return
     const { type, id } = confirmDelete
@@ -299,14 +445,6 @@ export default function Admin({
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Link
-              to="/"
-              className="inline-flex items-center gap-1.5 bg-white text-[#111111] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border border-[#e5e2e1] hover:bg-[#f1edec] transition-colors"
-              style={{ fontFamily: "'Inter', sans-serif" }}
-            >
-              <ArrowLeft size={12} />
-              Back to Home
-            </Link>
             <span
               className="inline-flex items-center gap-1.5 bg-[#f1edec] text-[#111111] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest border border-[#e5e2e1]"
               style={{ fontFamily: "'Inter', sans-serif" }}
@@ -318,17 +456,18 @@ export default function Admin({
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <AdminStat icon={Users} label="Total Users" value={(userList || []).length} />
           <AdminStat icon={FolderKanban} label="Total Projects" value={(projects || []).length} />
           <AdminStat icon={Briefcase} label="Internships" value={(internships || []).length} />
+          <AdminStat icon={BookOpen} label="Courses" value={(courses || []).length} />
         </div>
 
         {/* Data Controls */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white p-4 border border-[#e5e2e1]">
           {/* Tabs */}
           <div className="flex gap-2 flex-wrap">
-            {['Users', 'Projects', 'Internships', 'Courses', 'Requests'].map((tab) => (
+            {['Users', 'Projects', 'Internships', 'Courses', 'Requests', 'Employers'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => handleTabClick(tab)}
@@ -344,9 +483,9 @@ export default function Admin({
               </button>
             ))}
           </div>
-          {/* Role filter – only for Users tab */}
+          {/* Role filter + Create Account – only for Users tab */}
           {activeTab === 'Users' && (
-            <div className="flex gap-2 w-full md:w-auto">
+            <div className="flex gap-2 w-full md:w-auto flex-wrap">
               <div className="relative flex-1 md:w-48">
                 <Filter size={14} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-[#747878]" />
                 <select
@@ -362,6 +501,11 @@ export default function Admin({
                   <option value="Instructor">Instructor</option>
                 </select>
               </div>
+              <button onClick={() => setIsCreatingUser(true)}
+                className="flex items-center gap-1.5 bg-[#111111] text-white px-4 py-2 text-xs font-bold uppercase tracking-widest hover:bg-[#333] transition-colors flex-shrink-0"
+                style={{ fontFamily: "'Inter', sans-serif" }}>
+                <Plus size={14} /> Create Account
+              </button>
             </div>
           )}
         </div>
@@ -391,7 +535,10 @@ export default function Admin({
                     >
                       <td className="py-3 px-4">
                         <div className="flex flex-col">
-                          <span className="font-semibold text-[#111111]">{user.name}</span>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-[#111111]">{user.name}</span>
+                            {user.active === false && <span className="text-[9px] font-bold uppercase tracking-widest bg-[#ba1a1a] text-white px-1.5 py-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>Deactivated</span>}
+                          </div>
                           <span className="text-[#747878] text-xs mt-0.5">{user.email}</span>
                         </div>
                       </td>
@@ -408,6 +555,13 @@ export default function Admin({
                       </td>
                       <td className="py-3 px-4 text-right">
                         <div className="flex items-center justify-end gap-1">
+                          <button
+                            onClick={() => handleToggleUserActive(user)}
+                            className={`p-1.5 transition-colors focus:outline-none ${user.active === false ? 'text-green-600 hover:text-green-800' : 'text-[#747878] hover:text-[#ba1a1a]'}`}
+                            title={user.active === false ? 'Activate user' : 'Deactivate user'}
+                          >
+                            {user.active === false ? <ToggleLeft size={16} /> : <ToggleRight size={16} />}
+                          </button>
                           <button
                             onClick={() => setEditingUser(user)}
                             className="p-1.5 text-[#747878] hover:text-[#111111] transition-colors focus:outline-none focus:ring-1 focus:ring-[#111111]"
@@ -475,13 +629,22 @@ export default function Admin({
                         </td>
                         <td className="py-3 px-4 text-[#747878] text-xs uppercase">{p.visibility || 'Public'}</td>
                         <td className="py-3 px-4 text-right">
-                          <button
-                            onClick={() => handleDeleteProject(p)}
-                            className="p-1.5 text-[#747878] hover:text-[#ba1a1a] transition-colors focus:outline-none focus:ring-1 focus:ring-[#ba1a1a]"
-                            title="Delete project"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => handleToggleProjectVisibility(p)}
+                              className={`p-1.5 transition-colors ${p.adminHidden ? 'text-green-600 hover:text-green-800' : 'text-[#747878] hover:text-[#111111]'}`}
+                              title={p.adminHidden ? 'Show project' : 'Hide project'}
+                            >
+                              {p.adminHidden ? <Eye size={16} /> : <EyeOff size={16} />}
+                            </button>
+                            <button
+                              onClick={() => handleDeleteProject(p)}
+                              className="p-1.5 text-[#747878] hover:text-[#ba1a1a] transition-colors focus:outline-none focus:ring-1 focus:ring-[#ba1a1a]"
+                              title="Delete project"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         </td>
                       </tr>
                     )
@@ -679,9 +842,86 @@ export default function Admin({
             </table>
           </div>
         )}
+
+        {/* ── Employers Approval ── */}
+        {activeTab === 'Employers' && (
+          <div className="bg-white border border-[#e5e2e1] overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-[#f7f3f2] border-b border-[#e5e2e1]">
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Employer</th>
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Company</th>
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>Document</th>
+                  <th className="py-3 px-4 text-xs font-semibold text-[#747878] uppercase tracking-wider text-right" style={{ fontFamily: "'Inter', sans-serif" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody className="text-sm text-[#111111]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                {(userList || []).filter(u => u.role === 'employer' && u.approvalStatus === 'pending').length === 0 ? (
+                  <tr>
+                    <td colSpan={4} className="py-10 text-center text-[#747878] text-sm">No pending employer applications.</td>
+                  </tr>
+                ) : (
+                  (userList || []).filter(u => u.role === 'employer' && u.approvalStatus === 'pending').map((emp, idx) => (
+                    <tr
+                      key={emp.id}
+                      className={`hover:bg-[#f7f3f2] transition-colors group ${idx !== (userList || []).filter(u => u.role === 'employer' && u.approvalStatus === 'pending').length - 1 ? 'border-b border-[#e5e2e1]' : ''}`}
+                    >
+                      <td className="py-3 px-4">
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-[#111111]">{emp.name}</span>
+                          <span className="text-[#747878] text-xs mt-0.5">{emp.email}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-4 text-[#747878]">{emp.company} - {emp.position}</td>
+                      <td className="py-3 px-4">
+                        {emp.taxCertificate ? (
+                          <a href={emp.taxCertificate} download={emp.taxCertificateFileName || 'tax-certificate.pdf'} target="_blank" rel="noreferrer" className="text-xs font-bold text-[#111111] underline hover:text-[#6b38d4]">
+                            {emp.taxCertificateFileName || 'Download PDF'}
+                          </a>
+                        ) : (
+                          <span className="text-[#747878] text-xs">No file</span>
+                        )}
+                      </td>
+                      <td className="py-3 px-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            onClick={() => {
+                              onUpdateUser({ ...emp, approvalStatus: 'approved' })
+                              toast.success(`Approved employer ${emp.name}`)
+                            }}
+                            className="bg-[#111111] text-white px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest hover:bg-[#333] transition-colors"
+                            style={{ fontFamily: "'Inter', sans-serif" }}
+                          >
+                            Accept
+                          </button>
+                          <button
+                            onClick={() => {
+                              onUpdateUser({ ...emp, approvalStatus: 'rejected' })
+                              toast.success(`Rejected employer ${emp.name}`)
+                            }}
+                            className="bg-white text-[#ba1a1a] border border-[#ba1a1a] px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest hover:bg-[#fdf8f8] transition-colors"
+                            style={{ fontFamily: "'Inter', sans-serif" }}
+                          >
+                            Reject
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Modals */}
+      {isCreatingUser && (
+        <CreateUserModal
+          onSave={handleCreateUser}
+          onClose={() => setIsCreatingUser(false)}
+        />
+      )}
       {editingUser && (
         <EditUserModal
           user={editingUser}

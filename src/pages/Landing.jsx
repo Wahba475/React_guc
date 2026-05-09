@@ -8,9 +8,7 @@ import { FeaturesSection } from '../components/ui/features-section'
 export default function Landing({ currentUser }) {
   const navigate = useNavigate()
 
-  useEffect(() => {
-    if (currentUser && currentUser.role !== 'admin') navigate('/dashboard')
-  }, [currentUser, navigate])
+  // Remove forced redirect so users can view the homepage even when logged in.
 
   return (
     <div className="min-h-screen bg-[#fdf8f8] flex flex-col">

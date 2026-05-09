@@ -121,7 +121,7 @@ function EditField({ label, value, onChange, type = 'text', textarea = false }) 
 /* ── Page ───────────────────────────────────────────────── */
 export default function Profile({
   currentUser, onLogout, onUpdateUser, projects, internships = [],
-  notifications = [], onMarkRead, onClearNotifications
+  notifications = [], onMarkRead, onClearNotifications, userList = []
 }) {
   const Layout = getLayoutForRole(currentUser?.role)
   const [editMode, setEditMode] = useState(false)
@@ -142,12 +142,17 @@ export default function Profile({
       name: currentUser.name || '',
       bio: currentUser.bio || '',
       skills: (currentUser.skills || []).join(', '),
+      linkedin: currentUser.linkedin || '',
       university: currentUser.university || '',
       major: currentUser.major || '',
       gpa: currentUser.gpa || '',
       company: currentUser.company || '',
       position: currentUser.position || '',
+      address: currentUser.address || '',
+      contactInfo: currentUser.contactInfo || '',
       department: currentUser.department || '',
+      researchInterests: currentUser.researchInterests || '',
+      educationBackground: currentUser.educationBackground || '',
     })
     setEditMode(true)
   }
@@ -174,11 +179,16 @@ export default function Profile({
       patch.university = draft.university
       patch.major = draft.major
       patch.gpa = draft.gpa
+      patch.linkedin = draft.linkedin
     } else if (currentUser.role === 'employer') {
       patch.company = draft.company
       patch.position = draft.position
+      patch.address = draft.address
+      patch.contactInfo = draft.contactInfo
     } else if (currentUser.role === 'instructor') {
       patch.department = draft.department
+      patch.researchInterests = draft.researchInterests
+      patch.educationBackground = draft.educationBackground
     }
     onUpdateUser(patch)
     setEditMode(false)
@@ -197,11 +207,18 @@ export default function Profile({
     return (val) => setDraft((d) => ({ ...d, [key]: val }))
   }
 
+  const favPortfolios = (currentUser?.favorites?.portfolios || [])
+    .map(id => (userList || []).find(u => u.id === id))
+    .filter(Boolean)
+  const favProjects = (currentUser?.favorites?.projects || [])
+    .map(id => (projects || []).find(p => p.id === id))
+    .filter(Boolean)
+
   const sections = [
     { id: 'info', label: 'Information' },
     { id: 'notifications', label: `Notifications${unreadCount > 0 ? ` (${unreadCount})` : ''}` },
+    ...(currentUser.role === 'student' || currentUser.role === 'employer' ? [{ id: 'favorites', label: 'Favorites' }] : []),
     ...(currentUser.role === 'student' ? [{ id: 'internships', label: 'Completed Internships' }] : []),
-    ...(currentUser.role === 'instructor' ? [{ id: 'courses', label: 'My Courses' }] : []),
   ]
 
   return (
@@ -343,16 +360,23 @@ export default function Profile({
                         <EditField label="University" value={draft.university} onChange={setField('university')} />
                         <EditField label="Major" value={draft.major} onChange={setField('major')} />
                         <EditField label="GPA" value={draft.gpa} onChange={setField('gpa')} />
+                        <EditField label="LinkedIn / CV Link" value={draft.linkedin} onChange={setField('linkedin')} />
                       </>
                     )}
                     {currentUser.role === 'employer' && (
                       <>
                         <EditField label="Company" value={draft.company} onChange={setField('company')} />
                         <EditField label="Position" value={draft.position} onChange={setField('position')} />
+                        <EditField label="Address" value={draft.address} onChange={setField('address')} />
+                        <EditField label="Contact Info" value={draft.contactInfo} onChange={setField('contactInfo')} />
                       </>
                     )}
                     {currentUser.role === 'instructor' && (
-                      <EditField label="Department" value={draft.department} onChange={setField('department')} />
+                      <>
+                        <EditField label="Department" value={draft.department} onChange={setField('department')} />
+                        <EditField label="Research Interests" value={draft.researchInterests} onChange={setField('researchInterests')} textarea />
+                        <EditField label="Education Background" value={draft.educationBackground} onChange={setField('educationBackground')} textarea />
+                      </>
                     )}
                   </div>
                 ) : (
@@ -365,16 +389,28 @@ export default function Profile({
                         <InfoRow label="University" value={currentUser.university} />
                         <InfoRow label="Major" value={currentUser.major} />
                         <InfoRow label="GPA" value={currentUser.gpa} />
+                        {currentUser.linkedin && (
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-1 py-3 border-b border-[#e5e2e1]">
+                            <span className="w-32 flex-shrink-0 text-xs font-bold uppercase tracking-wider text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>LinkedIn / CV</span>
+                            <a href={currentUser.linkedin} target="_blank" rel="noreferrer" className="text-sm text-[#6b38d4] underline break-all" style={{ fontFamily: "'Manrope', sans-serif" }}>{currentUser.linkedin}</a>
+                          </div>
+                        )}
                       </>
                     )}
                     {currentUser.role === 'employer' && (
                       <>
                         <InfoRow label="Company" value={currentUser.company} />
                         <InfoRow label="Position" value={currentUser.position} />
+                        <InfoRow label="Address" value={currentUser.address} />
+                        <InfoRow label="Contact Info" value={currentUser.contactInfo} />
                       </>
                     )}
                     {currentUser.role === 'instructor' && (
-                      <InfoRow label="Department" value={currentUser.department} />
+                      <>
+                        <InfoRow label="Department" value={currentUser.department} />
+                        <InfoRow label="Research Interests" value={currentUser.researchInterests} />
+                        <InfoRow label="Education" value={currentUser.educationBackground} />
+                      </>
                     )}
                     <InfoRow label="Bio" value={currentUser.bio} />
                     {!currentUser.bio && (
@@ -485,46 +521,61 @@ export default function Profile({
               </div>
             )}
 
-            {/* ── My Courses Section (Req 7) ── */}
-            {activeSection === 'courses' && currentUser.role === 'instructor' && (
-              <div className="bg-white border border-[#e5e2e1]">
-                <div className="px-6 py-4 border-b border-[#e5e2e1]">
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>
-                    My Courses
-                  </h2>
-                </div>
-                <div className="p-6">
-                  {courses.length === 0 ? (
-                    <p className="text-sm text-[#747878]" style={{ fontFamily: "'Manrope', sans-serif" }}>No courses available in the system.</p>
+            {/* ── Favorites Section (Req 66) ── */}
+            {activeSection === 'favorites' && (currentUser.role === 'student' || currentUser.role === 'employer') && (
+              <div className="space-y-4">
+                {/* Favorite Portfolios */}
+                <div className="bg-white border border-[#e5e2e1]">
+                  <div className="px-6 py-4 border-b border-[#e5e2e1]">
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Favorite Portfolios
+                    </h2>
+                  </div>
+                  {favPortfolios.length === 0 ? (
+                    <div className="px-6 py-8 text-center">
+                      <p className="text-sm text-[#747878]" style={{ fontFamily: "'Manrope', sans-serif" }}>No favorite portfolios yet. Browse student portfolios to add some.</p>
+                    </div>
                   ) : (
-                    <div className="space-y-4">
-                      {courses.map(course => {
-                        const isLinked = (currentUser.courses || []).includes(course.id)
-                        return (
-                          <div key={course.id} className="flex items-center justify-between border border-[#e5e2e1] p-4 bg-[#fdf8f8]">
-                            <div>
-                              <p className="text-sm font-bold text-[#111111]">{course.code} - {course.name}</p>
-                              <p className="text-xs text-[#747878] mt-1">{isLinked ? 'Currently Linked' : 'Not Linked'}</p>
-                            </div>
-                            <button
-                              onClick={() => {
-                                onRequestCourseLink({
-                                  id: String(Date.now()),
-                                  instructorId: currentUser.id,
-                                  courseId: course.id,
-                                  type: isLinked ? 'unlink' : 'link',
-                                  createdAt: new Date().toISOString()
-                                })
-                                toast.success(`Request to ${isLinked ? 'unlink' : 'link'} sent to Admin.`)
-                              }}
-                              className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${isLinked ? 'border border-[#ba1a1a] text-[#ba1a1a] hover:bg-[#ba1a1a] hover:text-white' : 'bg-[#111111] text-white hover:bg-[#333]'}`}
-                              style={{ fontFamily: "'Inter', sans-serif" }}
-                            >
-                              {isLinked ? 'Request Unlink' : 'Request Link'}
-                            </button>
+                    <div>
+                      {favPortfolios.map((u, idx) => (
+                        <div key={u.id} className={`flex items-center justify-between px-6 py-4 ${idx !== favPortfolios.length - 1 ? 'border-b border-[#e5e2e1]' : ''}`}>
+                          <div>
+                            <p className="text-sm font-bold text-[#111111]" style={{ fontFamily: "'Manrope', sans-serif" }}>{u.name}</p>
+                            <p className="text-xs text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>{u.major || 'Student'} · {u.email}</p>
                           </div>
-                        )
-                      })}
+                          <a href={`/portfolio/${u.id}`} className="text-[10px] font-bold uppercase tracking-widest text-[#111111] border border-[#111111] px-3 py-1.5 hover:bg-[#f1edec] transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            View →
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Favorite Projects */}
+                <div className="bg-white border border-[#e5e2e1]">
+                  <div className="px-6 py-4 border-b border-[#e5e2e1]">
+                    <h2 className="text-xs font-bold uppercase tracking-wider text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Favorite Projects
+                    </h2>
+                  </div>
+                  {favProjects.length === 0 ? (
+                    <div className="px-6 py-8 text-center">
+                      <p className="text-sm text-[#747878]" style={{ fontFamily: "'Manrope', sans-serif" }}>No favorite projects yet.</p>
+                    </div>
+                  ) : (
+                    <div>
+                      {favProjects.map((p, idx) => (
+                        <div key={p.id} className={`flex items-center justify-between px-6 py-4 ${idx !== favProjects.length - 1 ? 'border-b border-[#e5e2e1]' : ''}`}>
+                          <div>
+                            <p className="text-sm font-bold text-[#111111]" style={{ fontFamily: "'Manrope', sans-serif" }}>{p.title}</p>
+                            <p className="text-xs text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>{p.status || 'In Progress'}</p>
+                          </div>
+                          <a href={`/projects/${p.id}`} className="text-[10px] font-bold uppercase tracking-widest text-[#111111] border border-[#111111] px-3 py-1.5 hover:bg-[#f1edec] transition-colors" style={{ fontFamily: "'Inter', sans-serif" }}>
+                            View →
+                          </a>
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>

@@ -127,20 +127,31 @@ export default function PortfolioView({ currentUser, onLogout, notifications, on
                              </div>
                              
                              <div className="mt-auto pt-4 border-t border-[#e5e2e1] flex items-center justify-between">
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-wrap">
                                     {(project.tags || []).slice(0, 3).map(tag => (
                                         <span key={tag} className="text-[10px] font-semibold uppercase tracking-wider bg-[#f1edec] text-[#111111] px-2 py-1" style={{ fontFamily: "'Inter', sans-serif" }}>
                                             {tag}
                                         </span>
                                     ))}
                                 </div>
-                                <Link
-                                    to={`/projects/${project.id}`}
-                                    className="text-xs font-bold uppercase tracking-wider text-[#111111] hover:text-[#6b38d4] transition-colors"
-                                    style={{ fontFamily: "'Inter', sans-serif" }}
-                                >
-                                    Details →
-                                </Link>
+                                <div className="flex items-center gap-2">
+                                    {(currentUser.role === 'student' || currentUser.role === 'employer') && (
+                                      <button
+                                        onClick={() => onToggleFavorite('projects', project.id)}
+                                        className={`transition-colors ${(currentUser?.favorites?.projects || []).includes(project.id) ? 'text-red-500' : 'text-[#c4c7c7] hover:text-red-500'}`}
+                                        title="Favorite project"
+                                      >
+                                        <Heart size={14} fill={(currentUser?.favorites?.projects || []).includes(project.id) ? 'currentColor' : 'none'} />
+                                      </button>
+                                    )}
+                                    <Link
+                                        to={`/projects/${project.id}`}
+                                        className="text-xs font-bold uppercase tracking-wider text-[#111111] hover:text-[#6b38d4] transition-colors"
+                                        style={{ fontFamily: "'Inter', sans-serif" }}
+                                    >
+                                        Details →
+                                    </Link>
+                                </div>
                              </div>
                          </div>
                     ))}

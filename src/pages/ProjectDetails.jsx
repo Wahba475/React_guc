@@ -1,25 +1,35 @@
 import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getLayoutForRole } from '../utils/layoutForRole'
-import { GitFork, ExternalLink, ArrowLeft, Plus, Send, Check, X } from 'lucide-react'
+import { GitFork, ExternalLink, ArrowLeft, Plus, Send, Check, X, ChevronUp, ChevronDown } from 'lucide-react'
 
-const TABS = ['Overview', 'Tasks', 'Comments', 'Collaborators']
+const TABS = ['Overview', 'Tasks', 'Comments', 'Collaborators', 'Instructors']
 
-export default function ProjectDetails({ currentUser, onLogout, projects, userList, onUpdateProject }) {
+export default function ProjectDetails({ currentUser, onLogout, projects, userList, onUpdateProject, onAddNotification, courses = [] }) {
   const Layout = getLayoutForRole(currentUser?.role)
   const { id } = useParams()
   const [tab, setTab] = useState('Overview')
 
+
   // Task form
   const [taskText, setTaskText] = useState('')
   const [taskAssignee, setTaskAssignee] = useState('')
+  const [taskDeadline, setTaskDeadline] = useState('')
+  const [taskStatus, setTaskStatus] = useState('pending')
 
   // Comment form
   const [commentText, setCommentText] = useState('')
 
+  // Task Comment form
+  const [taskCommentText, setTaskCommentText] = useState({})
+
   // Collaborator form
   const [collabEmail, setCollabEmail] = useState('')
   const [collabMsg, setCollabMsg] = useState('')
+
+  // Instructor form
+  const [instEmail, setInstEmail] = useState('')
+  const [instMsg, setInstMsg] = useState('')
 
   const project = projects.find((p) => p.id === id)
 
@@ -37,10 +47,14 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
   }
 
   const isOwner = String(project.ownerId) === String(currentUser.id)
+  const collaborators = project.collaborators || []
+  const isAssignedInstructor = currentUser.role === 'instructor' && (project.instructors || []).includes(currentUser.name)
+  const canInteract = isOwner || collaborators.includes(currentUser.name) || isAssignedInstructor
+
   const tasks = project.tasks || []
   const comments = project.comments || []
-  const collaborators = project.collaborators || []
   const milestones = project.milestones || []
+  const instructors = project.instructors || []
 
   const completedTasks = tasks.filter((t) => t.done).length
   const completedMilestones = milestones.filter((m) => m.done).length
@@ -56,23 +70,72 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
       id: String(Date.now()),
       description: taskText.trim(),
       assignedTo: taskAssignee.trim() || currentUser.name,
-      done: false,
+      status: taskStatus,
+      deadline: taskDeadline || null,
+      done: taskStatus === 'completed',
       createdAt: new Date().toISOString(),
     }
     onUpdateProject({ ...project, tasks: [...tasks, newTask] })
     setTaskText('')
     setTaskAssignee('')
+    setTaskDeadline('')
+    setTaskStatus('pending')
   }
 
-  function toggleTask(taskId) {
+  function setTaskStatusUpdate(taskId, newStatus) {
     const updated = tasks.map((t) =>
-      t.id === taskId ? { ...t, done: !t.done } : t
+      t.id === taskId ? { ...t, status: newStatus, done: newStatus === 'completed' } : t
     )
     onUpdateProject({ ...project, tasks: updated })
   }
 
   function deleteTask(taskId) {
     onUpdateProject({ ...project, tasks: tasks.filter((t) => t.id !== taskId) })
+  }
+
+  function moveTaskUp(idx) {
+    if (idx === 0) return
+    const updated = [...tasks]
+    ;[updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]]
+    onUpdateProject({ ...project, tasks: updated })
+  }
+
+  function moveTaskDown(idx) {
+    if (idx === tasks.length - 1) return
+    const updated = [...tasks]
+    ;[updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]]
+    onUpdateProject({ ...project, tasks: updated })
+  }
+
+  function removeCollaborator(name) {
+    onUpdateProject({ ...project, collaborators: collaborators.filter(c => c !== name) })
+  }
+
+  function addTaskComment(e, taskId) {
+    e.preventDefault()
+    const text = taskCommentText[taskId]
+    if (!text?.trim()) return
+    const updatedTasks = tasks.map(t => {
+      if (t.id === taskId) {
+        return {
+          ...t,
+          comments: [...(t.comments || []), { id: String(Date.now()), author: currentUser.name, text: text.trim(), createdAt: new Date().toISOString() }]
+        }
+      }
+      return t
+    })
+    onUpdateProject({ ...project, tasks: updatedTasks })
+    setTaskCommentText(prev => ({ ...prev, [taskId]: '' }))
+  }
+
+  function deleteTaskComment(taskId, commentId) {
+    const updatedTasks = tasks.map(t => {
+      if (t.id === taskId) {
+        return { ...t, comments: (t.comments || []).filter(c => c.id !== commentId) }
+      }
+      return t
+    })
+    onUpdateProject({ ...project, tasks: updatedTasks })
   }
 
   // ── Comment actions ───────────────────────────────────
@@ -86,7 +149,15 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
       createdAt: new Date().toISOString(),
     }
     onUpdateProject({ ...project, comments: [...comments, newComment] })
+    // Req 41: Notify project owner when instructor comments
+    if (onAddNotification && currentUser.role === 'instructor' && project.ownerId !== currentUser.id) {
+      onAddNotification(project.ownerId, `${currentUser.name} left a comment on your project "${project.title}".`)
+    }
     setCommentText('')
+  }
+
+  function deleteProjectComment(commentId) {
+    onUpdateProject({ ...project, comments: comments.filter(c => c.id !== commentId) })
   }
 
   // ── Collaborator actions ──────────────────────────────
@@ -103,6 +174,38 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
     setCollabEmail('')
     setCollabMsg('Collaborator added!')
     setTimeout(() => setCollabMsg(''), 2500)
+  }
+
+  // ── Instructor actions ──────────────────────────────
+  function inviteInstructor(e) {
+    e.preventDefault()
+    setInstMsg('')
+    if (!instEmail.trim()) return
+    const user = (userList || []).find(
+      (u) => u.email.toLowerCase() === instEmail.trim().toLowerCase() && u.role === 'instructor'
+    )
+    if (!user) return setInstMsg('No instructor found with that email.')
+    if (instructors.includes(user.name)) return setInstMsg('Already an assigned instructor.')
+    
+    // Check if invitation already exists
+    const existing = (project.invitations || []).find(i => i.email.toLowerCase() === instEmail.trim().toLowerCase())
+    if (existing && existing.status === 'pending') return setInstMsg('Invitation already sent.')
+
+    const newInv = {
+      id: String(Date.now()),
+      email: user.email,
+      status: 'pending',
+      createdAt: new Date().toISOString()
+    }
+    onUpdateProject({ ...project, invitations: [...(project.invitations || []), newInv] })
+    
+    if (onAddNotification) {
+      onAddNotification(user.id, `You have been invited to supervise the project "${project.title}".`)
+    }
+
+    setInstEmail('')
+    setInstMsg('Invitation sent!')
+    setTimeout(() => setInstMsg(''), 2500)
   }
 
   function toggleMilestone(idx) {
@@ -208,9 +311,28 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                 <h2 className="text-2xl font-bold text-[#111111] border-b border-[#e5e2e1] pb-2 mb-4" style={{ fontFamily: "'Newsreader', serif" }}>
                   Project Brief
                 </h2>
-                <p className="text-base text-[#111111] leading-relaxed" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                <p className="text-base text-[#111111] leading-relaxed mb-4" style={{ fontFamily: "'Manrope', sans-serif" }}>
                   {project.description}
                 </p>
+                {/* Course */}
+                {project.courseId && (() => {
+                  const course = courses.find(c => c.id === project.courseId)
+                  return course ? (
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xs font-bold uppercase tracking-widest text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>Course:</span>
+                      <span className="text-xs font-semibold text-[#111111]" style={{ fontFamily: "'Inter', sans-serif" }}>{course.code} — {course.name}</span>
+                    </div>
+                  ) : null
+                })()}
+                {/* Languages */}
+                {project.languages && project.languages.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-xs font-bold uppercase tracking-widest text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>Languages:</span>
+                    {project.languages.map(lang => (
+                      <span key={lang} className="bg-[#f1edec] text-[#111111] text-[10px] font-bold uppercase tracking-widest px-2 py-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>{lang}</span>
+                    ))}
+                  </div>
+                )}
               </section>
             )}
 
@@ -233,7 +355,7 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                         type="checkbox"
                         checked={m.done}
                         onChange={() => toggleMilestone(i)}
-                        disabled={!isOwner}
+                        disabled={!canInteract}
                         className="w-4 h-4 border-2 border-[#111111] accent-[#111111]"
                       />
                       <span className={`text-sm ${m.done ? 'line-through text-[#747878]' : 'text-[#111111]'}`} style={{ fontFamily: "'Manrope', sans-serif" }}>
@@ -252,32 +374,37 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                   Tasks
                 </h2>
 
-                {/* Add task form */}
+                {/* Add task form — Req 32 */}
                 {isOwner && (
-                  <form onSubmit={addTask} className="flex flex-col sm:flex-row gap-3">
-                    <input
-                      type="text"
-                      value={taskText}
-                      onChange={(e) => setTaskText(e.target.value)}
-                      placeholder="Task description…"
-                      className="flex-1 border-b border-[#c4c7c7] py-2 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
-                      style={{ fontFamily: "'Manrope', sans-serif" }}
-                    />
-                    <input
-                      type="text"
-                      value={taskAssignee}
-                      onChange={(e) => setTaskAssignee(e.target.value)}
-                      placeholder="Assigned to (optional)"
-                      className="sm:w-48 border-b border-[#c4c7c7] py-2 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
-                      style={{ fontFamily: "'Manrope', sans-serif" }}
-                    />
-                    <button
-                      type="submit"
-                      className="inline-flex items-center gap-1.5 bg-[#111111] text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#333] transition-colors flex-shrink-0"
-                      style={{ fontFamily: "'Inter', sans-serif" }}
-                    >
-                      <Plus size={12} /> Add Task
-                    </button>
+                  <form onSubmit={addTask} className="space-y-3 bg-[#fdf8f8] border border-[#e5e2e1] p-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>Add Task</p>
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <input type="text" value={taskText} onChange={(e) => setTaskText(e.target.value)}
+                        placeholder="Task description…"
+                        className="flex-1 border-b border-[#c4c7c7] py-2 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
+                        style={{ fontFamily: "'Manrope', sans-serif" }} />
+                      <input type="text" value={taskAssignee} onChange={(e) => setTaskAssignee(e.target.value)}
+                        placeholder="Assigned to…"
+                        className="sm:w-40 border-b border-[#c4c7c7] py-2 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
+                        style={{ fontFamily: "'Manrope', sans-serif" }} />
+                    </div>
+                    <div className="flex flex-wrap gap-3 items-center">
+                      <select value={taskStatus} onChange={e => setTaskStatus(e.target.value)}
+                        className="border border-[#c4c7c7] py-1.5 px-2 text-xs bg-white text-[#111111] focus:border-[#111111] focus:outline-none"
+                        style={{ fontFamily: "'Inter', sans-serif" }}>
+                        <option value="pending">Pending</option>
+                        <option value="postponed">Postponed</option>
+                        <option value="completed">Completed</option>
+                      </select>
+                      <input type="date" value={taskDeadline} onChange={e => setTaskDeadline(e.target.value)}
+                        className="border-b border-[#c4c7c7] py-1.5 bg-transparent focus:border-[#111111] focus:outline-none text-xs text-[#111111] transition-colors"
+                        style={{ fontFamily: "'Inter', sans-serif" }} />
+                      <button type="submit"
+                        className="inline-flex items-center gap-1.5 bg-[#111111] text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#333] transition-colors"
+                        style={{ fontFamily: "'Inter', sans-serif" }}>
+                        <Plus size={12} /> Add Task
+                      </button>
+                    </div>
                   </form>
                 )}
 
@@ -286,32 +413,95 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                   <p className="text-sm text-[#747878]" style={{ fontFamily: "'Manrope', sans-serif" }}>No tasks yet.</p>
                 ) : (
                   <div className="space-y-2">
-                    {tasks.map((t) => (
-                      <div key={t.id} className="flex items-center gap-3 p-3 border border-[#e5e2e1] hover:bg-[#fdf8f8] transition-colors group">
-                        <input
-                          type="checkbox"
-                          checked={t.done}
-                          onChange={() => toggleTask(t.id)}
-                          className="w-4 h-4 border-2 border-[#111111] accent-[#111111] flex-shrink-0"
-                        />
-                        <div className="flex-1">
-                          <p className={`text-sm ${t.done ? 'line-through text-[#747878]' : 'text-[#111111]'}`} style={{ fontFamily: "'Manrope', sans-serif" }}>
-                            {t.description}
-                          </p>
-                          <p className="text-xs text-[#747878] mt-0.5" style={{ fontFamily: "'Inter', sans-serif" }}>
-                            Assigned: {t.assignedTo}
-                          </p>
+                    {tasks.map((t, idx) => {
+                      const statusColors = {
+                        completed: 'bg-green-100 text-green-800',
+                        postponed: 'bg-amber-100 text-amber-800',
+                        pending: 'bg-[#f1edec] text-[#747878]',
+                      }
+                      const statusLabel = t.status || (t.done ? 'completed' : 'pending')
+                      return (
+                        <div key={t.id} className="flex items-start gap-3 p-3 border border-[#e5e2e1] hover:bg-[#fdf8f8] transition-colors group">
+                          {/* Reorder buttons (owner only) */}
+                          {isOwner && (
+                            <div className="flex flex-col gap-0.5 flex-shrink-0 mt-0.5">
+                              <button onClick={() => moveTaskUp(idx)} disabled={idx === 0}
+                                className="text-[#c4c7c7] hover:text-[#111111] disabled:opacity-30 transition-colors">
+                                <ChevronUp size={14} />
+                              </button>
+                              <button onClick={() => moveTaskDown(idx)} disabled={idx === tasks.length - 1}
+                                className="text-[#c4c7c7] hover:text-[#111111] disabled:opacity-30 transition-colors">
+                                <ChevronDown size={14} />
+                              </button>
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-1">
+                              <p className={`text-sm ${statusLabel === 'completed' ? 'line-through text-[#747878]' : 'text-[#111111]'}`} style={{ fontFamily: "'Manrope', sans-serif" }}>
+                                {t.description}
+                              </p>
+                              <span className={`text-[10px] font-bold uppercase tracking-widest px-1.5 py-0.5 ${statusColors[statusLabel] || statusColors.pending}`} style={{ fontFamily: "'Inter', sans-serif" }}>
+                                {statusLabel}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                              <span>Assigned: {t.assignedTo}</span>
+                              {t.deadline && <span>Due: {t.deadline}</span>}
+                            </div>
+                            {/* Status change (owner only) */}
+                            {isOwner && (
+                              <select
+                                value={statusLabel}
+                                onChange={e => setTaskStatusUpdate(t.id, e.target.value)}
+                                className="mt-2 border border-[#e5e2e1] text-[10px] py-0.5 px-1 bg-white text-[#111111] focus:border-[#111111] focus:outline-none"
+                                style={{ fontFamily: "'Inter', sans-serif" }}>
+                                <option value="pending">Pending</option>
+                                <option value="postponed">Postponed</option>
+                                <option value="completed">Completed</option>
+                              </select>
+                            )}
+                            {/* Task Comments */}
+                            <div className="mt-3 space-y-2 pl-2 border-l-2 border-[#e5e2e1]">
+                              {(t.comments || []).map(c => (
+                                <div key={c.id} className="flex justify-between items-start group/comment">
+                                  <p className="text-[11px] text-[#444748]" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                                    <span className="font-bold text-[#111111] mr-1">{c.author}:</span>
+                                    {c.text}
+                                  </p>
+                                  {canInteract && (
+                                    <button onClick={() => deleteTaskComment(t.id, c.id)} className="text-[#c4c7c7] hover:text-red-500 opacity-0 group-hover/comment:opacity-100 transition-opacity">
+                                      <X size={12} />
+                                    </button>
+                                  )}
+                                </div>
+                              ))}
+                              {canInteract && (
+                                <form onSubmit={(e) => addTaskComment(e, t.id)} className="flex gap-2 mt-1">
+                                  <input
+                                    type="text"
+                                    value={taskCommentText[t.id] || ''}
+                                    onChange={e => setTaskCommentText(prev => ({...prev, [t.id]: e.target.value}))}
+                                    placeholder="Reply..."
+                                    className="flex-1 bg-transparent border-b border-[#e5e2e1] focus:border-[#111111] outline-none text-[11px]"
+                                  />
+                                  <button type="submit" className="text-[10px] font-bold uppercase tracking-wider text-[#747878] hover:text-[#111111]">
+                                    Post
+                                  </button>
+                                </form>
+                              )}
+                            </div>
+                          </div>
+                          {canInteract && (
+                            <button
+                              onClick={() => deleteTask(t.id)}
+                              className="text-[#c4c7c7] hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
+                            >
+                              <X size={14} />
+                            </button>
+                          )}
                         </div>
-                        {isOwner && (
-                          <button
-                            onClick={() => deleteTask(t.id)}
-                            className="text-[#c4c7c7] hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100"
-                          >
-                            <X size={14} />
-                          </button>
-                        )}
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 )}
               </section>
@@ -325,25 +515,27 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                 </h2>
 
                 {/* Add comment */}
-                <form onSubmit={addComment} className="flex gap-3 items-end">
-                  <div className="flex-1">
-                    <textarea
-                      rows={2}
-                      value={commentText}
-                      onChange={(e) => setCommentText(e.target.value)}
-                      placeholder="Leave a comment…"
-                      className="w-full border border-[#c4c7c7] p-3 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors resize-none"
-                      style={{ fontFamily: "'Manrope', sans-serif" }}
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="flex-shrink-0 inline-flex items-center gap-1.5 bg-[#111111] text-white px-4 py-3 text-xs font-bold uppercase tracking-wider hover:bg-[#333] transition-colors"
-                    style={{ fontFamily: "'Inter', sans-serif" }}
-                  >
-                    <Send size={12} /> Post
-                  </button>
-                </form>
+                {canInteract && (
+                  <form onSubmit={addComment} className="flex gap-3 items-end">
+                    <div className="flex-1">
+                      <textarea
+                        rows={2}
+                        value={commentText}
+                        onChange={(e) => setCommentText(e.target.value)}
+                        placeholder="Leave a comment…"
+                        className="w-full border border-[#c4c7c7] p-3 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors resize-none"
+                        style={{ fontFamily: "'Manrope', sans-serif" }}
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="flex-shrink-0 inline-flex items-center gap-1.5 bg-[#111111] text-white px-4 py-3 text-xs font-bold uppercase tracking-wider hover:bg-[#333] transition-colors"
+                      style={{ fontFamily: "'Inter', sans-serif" }}
+                    >
+                      <Send size={12} /> Post
+                    </button>
+                  </form>
+                )}
 
                 {/* Comment list */}
                 {comments.length === 0 ? (
@@ -352,16 +544,25 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                   <div className="space-y-4">
                     {comments.map((c) => (
                       <div key={c.id} className="border-l-2 border-[#e5e2e1] pl-4 space-y-1">
-                        <div className="flex items-center gap-3">
-                          <div className="w-6 h-6 bg-[#111111] flex items-center justify-center flex-shrink-0">
-                            <span className="text-white text-[10px] font-bold">{c.author?.charAt(0)}</span>
+                        <div className="flex items-start justify-between group/pcomment">
+                          <div>
+                            <div className="flex items-center gap-3">
+                              <div className="w-6 h-6 bg-[#111111] flex items-center justify-center flex-shrink-0">
+                                <span className="text-white text-[10px] font-bold">{c.author?.charAt(0)}</span>
+                              </div>
+                              <span className="text-xs font-bold text-[#111111]" style={{ fontFamily: "'Inter', sans-serif" }}>{c.author}</span>
+                              <span className="text-xs text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>{formatDate(c.createdAt)}</span>
+                            </div>
+                            <p className="text-sm text-[#444748] leading-relaxed pl-9" style={{ fontFamily: "'Manrope', sans-serif" }}>
+                              {c.text}
+                            </p>
                           </div>
-                          <span className="text-xs font-bold text-[#111111]" style={{ fontFamily: "'Inter', sans-serif" }}>{c.author}</span>
-                          <span className="text-xs text-[#747878]" style={{ fontFamily: "'Inter', sans-serif" }}>{formatDate(c.createdAt)}</span>
+                          {canInteract && (
+                            <button onClick={() => deleteProjectComment(c.id)} className="text-[#c4c7c7] hover:text-red-500 opacity-0 group-hover/pcomment:opacity-100 transition-opacity">
+                              <X size={14} />
+                            </button>
+                          )}
                         </div>
-                        <p className="text-sm text-[#444748] leading-relaxed pl-9" style={{ fontFamily: "'Manrope', sans-serif" }}>
-                          {c.text}
-                        </p>
                       </div>
                     ))}
                   </div>
@@ -382,11 +583,17 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                     <p className="text-sm text-[#747878]" style={{ fontFamily: "'Manrope', sans-serif" }}>No collaborators yet.</p>
                   ) : (
                     collaborators.map((name) => (
-                      <div key={name} className="flex items-center gap-3 p-3 border border-[#e5e2e1]">
+                      <div key={name} className="flex items-center gap-3 p-3 border border-[#e5e2e1] group">
                         <div className="w-8 h-8 bg-[#f1edec] border border-[#e5e2e1] flex items-center justify-center flex-shrink-0">
                           <span className="text-[#111111] text-xs font-bold">{name.charAt(0)}</span>
                         </div>
-                        <span className="text-sm text-[#111111]" style={{ fontFamily: "'Manrope', sans-serif" }}>{name}</span>
+                        <span className="text-sm text-[#111111] flex-1" style={{ fontFamily: "'Manrope', sans-serif" }}>{name}</span>
+                        {isOwner && (
+                          <button onClick={() => removeCollaborator(name)}
+                            className="text-[#c4c7c7] hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <X size={14} />
+                          </button>
+                        )}
                       </div>
                     ))
                   )}
@@ -424,6 +631,62 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                 )}
               </section>
             )}
+
+            {/* INSTRUCTORS */}
+            {tab === 'Instructors' && (
+              <section className="bg-white border border-[#e5e2e1] p-6 md:p-8 space-y-6">
+                <h2 className="text-2xl font-bold text-[#111111] border-b border-[#e5e2e1] pb-2" style={{ fontFamily: "'Newsreader', serif" }}>
+                  Instructors
+                </h2>
+
+                {/* Current Instructors */}
+                <div className="space-y-3">
+                  {instructors.length === 0 ? (
+                    <p className="text-sm text-[#747878]" style={{ fontFamily: "'Manrope', sans-serif" }}>No instructors assigned.</p>
+                  ) : (
+                    instructors.map((name) => (
+                      <div key={name} className="flex items-center gap-3 p-3 border border-[#e5e2e1]">
+                        <div className="w-8 h-8 bg-[#111111] text-white flex items-center justify-center flex-shrink-0">
+                          <span className="text-xs font-bold">{name.charAt(0)}</span>
+                        </div>
+                        <span className="text-sm text-[#111111]" style={{ fontFamily: "'Manrope', sans-serif" }}>{name}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Add instructor (owner only) */}
+                {isOwner && (
+                  <form onSubmit={inviteInstructor} className="pt-4 border-t border-[#e5e2e1] space-y-3">
+                    <label className="block text-xs font-bold uppercase tracking-widest text-[#111111]" style={{ fontFamily: "'Inter', sans-serif" }}>
+                      Invite by email
+                    </label>
+                    <div className="flex gap-3">
+                      <input
+                        type="email"
+                        value={instEmail}
+                        onChange={(e) => setInstEmail(e.target.value)}
+                        placeholder="instructor@example.com"
+                        className="flex-1 border-b border-[#c4c7c7] py-2 bg-transparent focus:border-[#111111] focus:outline-none text-sm text-[#111111] placeholder:text-[#c4c7c7] transition-colors"
+                        style={{ fontFamily: "'Manrope', sans-serif" }}
+                      />
+                      <button
+                        type="submit"
+                        className="inline-flex items-center gap-1.5 bg-[#111111] text-white px-4 py-2 text-xs font-bold uppercase tracking-wider hover:bg-[#333] transition-colors flex-shrink-0"
+                        style={{ fontFamily: "'Inter', sans-serif" }}
+                      >
+                        <Plus size={12} /> Invite
+                      </button>
+                    </div>
+                    {instMsg && (
+                      <p className={`text-xs font-semibold ${instMsg.includes('sent') ? 'text-green-600' : 'text-red-600'}`} style={{ fontFamily: "'Inter', sans-serif" }}>
+                        {instMsg}
+                      </p>
+                    )}
+                  </form>
+                )}
+              </section>
+            )}
           </div>
 
           {/* Right column — metadata */}
@@ -452,6 +715,24 @@ export default function ProjectDetails({ currentUser, onLogout, projects, userLi
                 </p>
                 <div className="w-full h-1 bg-[#f1edec] mt-2">
                   <div className="h-1 bg-[#111111] transition-all duration-500" style={{ width: `${progress}%` }} />
+                </div>
+              </div>
+
+              <div className="border-t border-[#e5e2e1] pt-6">
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-[#747878] mb-2" style={{ fontFamily: "'Inter', sans-serif" }}>
+                  Rating
+                </h3>
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map(star => (
+                     <button 
+                       key={star} 
+                       onClick={() => isAssignedInstructor && onUpdateProject({...project, rating: star})}
+                       disabled={!isAssignedInstructor}
+                       className={`text-2xl ${project.rating >= star ? 'text-[#D97706]' : 'text-[#c4c7c7]'} ${isAssignedInstructor ? 'cursor-pointer hover:scale-110' : 'cursor-default'} transition-transform`}
+                     >
+                       ★
+                     </button>
+                  ))}
                 </div>
               </div>
 

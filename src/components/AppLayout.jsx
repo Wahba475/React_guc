@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Menu } from 'lucide-react'
+import { Menu, ArrowLeft } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
 export default function AppLayout({
   currentUser,
@@ -60,8 +61,19 @@ export default function AppLayout({
           </span>
         </div>
 
+        {/* Top-right Actions (Back to Home) */}
+        <div className="hidden lg:flex justify-end px-8 pt-6">
+          <Link
+            to="/"
+            className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#747878] hover:text-[#111111] transition-colors bg-white px-3 py-2 border border-[#e5e2e1] hover:bg-[#f1edec]"
+            style={{ fontFamily: "'Inter', sans-serif" }}
+          >
+            <ArrowLeft size={12} /> Back to Home
+          </Link>
+        </div>
+
         {/* Page content */}
-        <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto p-6 lg:px-8 lg:pb-8 lg:pt-4">
           {children}
         </main>
       </div>

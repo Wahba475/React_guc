@@ -156,7 +156,7 @@ function Step2({ role, onSubmit, onBack }) {
       if (role === 'student') {
         Object.assign(payload, { university: form.university, major: form.major, gpa: form.gpa })
       } else if (role === 'employer') {
-        Object.assign(payload, { company: form.company, position: form.position, taxCertificate: form.taxCertificate })
+        Object.assign(payload, { company: form.company, position: form.position, taxCertificate: form.taxCertificate, taxCertificateFileName: form.taxCertificateFileName })
       } else {
         Object.assign(payload, { department: form.department })
       }
@@ -201,7 +201,27 @@ function Step2({ role, onSubmit, onBack }) {
           <>
             <Field id="company" label="Company" value={form.company} onChange={set('company')} placeholder="TechCorp Egypt" />
             <Field id="position" label="Your Position" value={form.position} onChange={set('position')} placeholder="HR Manager" />
-            <Field id="tax-certificate" label="Tax Certificate (PDF URL)" value={form.taxCertificate} onChange={set('taxCertificate')} placeholder="https://example.com/tax-certificate.pdf" />
+            <div className="flex flex-col gap-1.5">
+              <label htmlFor="tax-certificate" className="text-xs font-bold text-[#111111] uppercase tracking-wider" style={{ fontFamily: "'Inter', sans-serif" }}>
+                Tax Certificate (PDF)
+              </label>
+              <input
+                id="tax-certificate"
+                type="file"
+                accept=".pdf"
+                onChange={(e) => {
+                  const file = e.target.files[0]
+                  if (file && file.type === 'application/pdf') {
+                    // Simulating file upload, storing a fake URL or file name
+                    setForm(prev => ({ ...prev, taxCertificate: URL.createObjectURL(file), taxCertificateFileName: file.name }))
+                  } else {
+                    toast.error('Please upload a valid PDF file.')
+                    e.target.value = ''
+                  }
+                }}
+                className="w-full py-2 text-sm text-[#111111] file:mr-4 file:py-2 file:px-4 file:border-0 file:text-xs file:font-bold file:uppercase file:tracking-widest file:bg-[#111111] file:text-white hover:file:bg-[#333] cursor-pointer"
+              />
+            </div>
           </>
         )}
         {role === 'instructor' && (
@@ -241,9 +261,14 @@ export default function Register({ onRegister, currentUser }) {
   }, [currentUser, navigate])
 
   function handleRegister(payload) {
-    onRegister(payload)
-    toast.success('Account created! Welcome to Portfolia.')
-    navigate(getRoleDashboardPath(payload.role))
+    const res = onRegister(payload)
+    if (res?.isPending) {
+      toast.success('Account created! Your application is pending admin approval.')
+      navigate('/login')
+    } else {
+      toast.success('Account created! Welcome to Portfolia.')
+      navigate(getRoleDashboardPath(payload.role))
+    }
   }
 
   return (
